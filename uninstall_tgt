@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# check if running as root
+if [ $EUID -ne 0 ]; then
+	echo "This script must be run as root."
+	exit 1
+fi
+
+# check if target module name provided
+if [ $# -le 0 ]; then
+	echo "Usage: ./uninstall_tgt <tgt-basename>"
+	exit 2
+fi
+
+# remove existing target module
+if [ -e iverilog/lib/ivl/$1.tgt ]; then
+	rm iverilog/lib/ivl/$1.tgt
+fi
+
+# remove existing configuration files
+if [ -e iverilog/lib/ivl/$1.conf ]; then
+	rm iverilog/lib/ivl/$1.conf
+fi
+if [ -e iverilog/lib/ivl/$1-s.conf ]; then
+	rm iverilog/lib/ivl/$1-s.conf
+fi
+
+exit 0
