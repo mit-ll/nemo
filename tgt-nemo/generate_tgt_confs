@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# remove existing configuration files if reinstalling
+if [ -e iverilog/lib/ivl/$1.conf ]; then
+	rm iverilog/lib/ivl/$1.conf
+fi
+if [ -e iverilog/lib/ivl/$1-s.conf ]; then
+	rm iverilog/lib/ivl/$1-s.conf
+fi
+
+# create simulation configuration file
+echo "functor:cprop
+functor:nodangle
+-t:dll
+flag:DLL=$1.tgt" > $1.conf
+
+# create synthesis configuration file
+echo "functor:synth2
+functor:synth
+functor:syn-rules
+functor:cprop
+functor:nodangle
+-t:dll
+flag:DLL=$1.tgt" > $1-s.conf
+
+exit 0
