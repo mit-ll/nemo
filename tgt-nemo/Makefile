@@ -9,9 +9,11 @@ IDIR=../iverilog
 CC=g++
 CFLAGS=-I$(IDIR) -fpic -shared 
 # -Wall -Wextra -Wshadow -g -O2
+LIBS=-lpthread
 
 TGT=nemo
-DOT=test
+DOT=up_counter
+# DOT=orpsoc_top.generic_low.nl
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 # DEPS=ttb.h ttb_signal.h ttb_dot_file.h ivl_target.h
@@ -19,10 +21,10 @@ OBJS=$(SRCS:.cc=.o)
 all: $(TGT) confs install
 
 $(TGT): $(OBJS)
-	$(CC) -undefined suppress -flat_namespace $(CFLAGS) -o $@.tgt $^ 
+	$(CC) -undefined suppress -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
  
 %.o: %.cc
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(LIBS) -c -o $@ $<
 
 confs: ./generate_tgt_confs
 	./generate_tgt_confs $(TGT)
@@ -40,7 +42,7 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -t nemo -o $(DOT).dot ../up_counter.v
+	../iverilog/bin/iverilog -t nemo -o $(DOT).dot ../$(DOT).v
 
 clean:
 	rm -f *.o

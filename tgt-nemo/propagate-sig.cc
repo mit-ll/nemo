@@ -25,7 +25,7 @@ void propagate_sig(TTB_Signal& aff_sig, std::vector<connection_t>& connections) 
 		fprintf(stderr, "File: %s Line: %d\n", ivl_signal_file(aff_sig.get_sig()), ivl_signal_lineno(aff_sig.get_sig()));
 		return;
 	}
-	
+
 	for (int idx = base; idx < base + count; idx++) {
 		const ivl_nexus_t nex = ivl_signal_nex(aff_sig.get_sig(), idx);
 		assert(nex);
@@ -35,7 +35,7 @@ void propagate_sig(TTB_Signal& aff_sig, std::vector<connection_t>& connections) 
 			assert(nex_ptr);
 
 			if ((sig = ivl_nexus_ptr_sig(nex_ptr))) {
-				// Means that the signals are the same. Usually happens on module hookups
+				// Signal connected to another signal --> Means that the signals are the same. Usually happens on module hookups
 				// Also if two signals in a module are hooked up to the same thing
 				//@TODO: Not sure how to handle this yet
 			}

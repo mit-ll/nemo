@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include  <ivl_target.h>
+#include <ivl_target.h>
 #include "ttb_signal.h"
 
 typedef std::map<std::string, TTB_Signal*> sig_map_t;
