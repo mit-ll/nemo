@@ -3,3 +3,5 @@ iverilog/*
 *.o
 *.dot
 *.v
+*.conf
+*.tgt
