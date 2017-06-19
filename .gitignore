@@ -5,3 +5,5 @@ iverilog/*
 *.v
 *.conf
 *.tgt
+*.pb.cc
+*.pb.h

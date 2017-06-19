@@ -12,13 +12,17 @@ CFLAGS=-I$(IDIR) -fpic -shared
 LIBS=-lpthread
 
 TGT=nemo
-# DOT=up_counter
-DOT=orpsoc_top.express50MHz.nl
+DOT=up_counter
+# DOT=orpsoc_top.express50MHz.nl
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
+PROTO=$(wildcard protobufs/*.proto)
 # DEPS=ttb.h ttb_signal.h ttb_dot_file.h ivl_target.h
 
-all: $(TGT) confs install
+all: proto $(TGT) confs install
+
+proto:
+	protoc -I=protobufs/ --cpp_out=. $(PROTO)
 
 $(TGT): $(OBJS)
 	$(CC) -undefined suppress -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
@@ -50,4 +54,8 @@ clean:
 	rm -f *.conf
 	rm -f $(DOT).dot
 
-cleanall: clean uninstall
+cleanproto:
+	rm -f *.pb.cc
+	rm -f *.pb.h
+
+cleanall: clean cleanproto uninstall

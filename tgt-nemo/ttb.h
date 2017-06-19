@@ -17,7 +17,7 @@
 #include <ivl_target.h>
 #include "ttb_signal.h"
 
-typedef std::map<std::string, TTB_Signal*> sig_map_t;
+// typedef std::map<std::string, TTB_Signal*> sig_map_t;
 
 // Cannot be pointers since these signals could be slices
 typedef std::pair<TTB_Signal, TTB_Signal> connection_t;

@@ -14,6 +14,9 @@
 #include "ttb_dot_file.h"
 #include "find_sigs.h"
 
+#include "design_signals.pb.h"
+using namespace nemo;
+
 void print_connection(const TTB_Signal& aff_sig, const TTB_Signal& sig, std::vector<connection_t>& connections) {
 	connections.push_back(connection_t(aff_sig, sig));
 }
@@ -63,12 +66,15 @@ int target_design(ivl_design_t des) {
 	int          			  rc;
 	ivl_scope_t* 			  roots = 0;   // root scopes of the design
 	unsigned int 			  num_roots;   // number of root scopes of the design
-	std::vector<TTB_Signal>   sigs;		   // all signals in the design 
-	sig_map_t 				  sig_map;	   // hash map btwn signal names (key) and signal objs (value)
-	std::vector<connection_t> connections; // all pair-wise signal connections
+	// std::vector<TTB_Signal>   sigs;		   // all signals in the design 
+	// sig_map_t 				  sig_map;	   // hash map btwn signal names (key) and signal objs (value)
+	// std::vector<connection_t> connections; // all pair-wise signal connections
 	Dot_File 				  df;		   // output dot file to represent signal graph
 	Sig_Finder  		  	  s_finder;    // object to parse scopes and find signals
 
+	// Protobuf Data Structures
+	Nemo_Signals 			  sigs;
+	
 	// Variables to calculate runtime of this target module
 	std::clock_t start;
 	double duration;
