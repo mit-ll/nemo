@@ -14,7 +14,7 @@
 #include "ttb_dot_file.h"
 #include "find_sigs.h"
 
-#include "design_signals.pb.h"
+#include "nemo_signals.pb.h"
 using namespace nemo;
 
 void print_connection(const TTB_Signal& aff_sig, const TTB_Signal& sig, std::vector<connection_t>& connections) {
@@ -74,7 +74,7 @@ int target_design(ivl_design_t des) {
 
 	// Protobuf Data Structures
 	Nemo_Signals 			  sigs;
-	
+
 	// Variables to calculate runtime of this target module
 	std::clock_t start;
 	double duration;

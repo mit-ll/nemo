@@ -8,7 +8,7 @@
 #include "ttb_signal.h"
 
 // Protobuf Classes
-#include "design_signals.pb.h"
+#include "nemo_signals.pb.h"
 using namespace nemo;
 
 #define NUM_SIG_FINDER_THREADS 8

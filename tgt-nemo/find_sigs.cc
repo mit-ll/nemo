@@ -28,7 +28,7 @@ void Sig_Finder::init_nemo_sig(ivl_signal_t ivl_sig, Nemo_Signal* sig){
 	sig->set_id(signal_counter);
 
 	// Set MSB and LSB dimensions
-	unsigned num_dimens = ivl_signal_packed_dimensions(s);
+	unsigned num_dimens = ivl_signal_packed_dimensions(ivl_sig);
 	if (num_dimens == 0) {
 		sig->set_msb(0);
 		sig->set_lsb(0);
@@ -47,9 +47,9 @@ void Sig_Finder::init_nemo_sig(ivl_signal_t ivl_sig, Nemo_Signal* sig){
 
 	// Set Signal Type
 	if (IVL_SIP_INPUT == ivl_signal_port(ivl_sig)) {
-		sig->set_sig_type(SIG_INPUT);
+		sig->set_sig_type(Nemo_Signal::SIG_INPUT);
 	} else {
-		sig->set_sig_type(SIG_NONE);
+		sig->set_sig_type(Nemo_Signal::SIG_NONE);
 	}
 }
 
@@ -71,9 +71,9 @@ void Sig_Finder::enumerate_sigs(ivl_scope_t scope, Nemo_Signals& sigs){
 	std::string sig_name;
 	for (unsigned idx = 0; idx < num_sigs; idx++) {
 		init_nemo_sig(ivl_scope_sig(scope, idx), sigs.add_signals());
-		signame = sigs.signals(signal_counter).fullname();
-		(*sigs.mutable_name2sig())[signame]->signal_counter++;
-		
+		sig_name = sigs.signals(signal_counter).fullname();
+		(*sigs.mutable_name2sig())[sig_name] = signal_counter++;
+
 		// if (std::regex_search(sigs.back().name(), critical_sigs_regex)){
 		// 	printf("Found Critical Sig: %s\n", sigs.back().name().c_str());
 		// }

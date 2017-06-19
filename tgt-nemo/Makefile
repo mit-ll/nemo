@@ -9,11 +9,13 @@ IDIR=../iverilog
 CC=g++
 CFLAGS=-I$(IDIR) -fpic -shared 
 # -Wall -Wextra -Wshadow -g -O2
-LIBS=-lpthread
+LIBS=-lpthread -lprotobuf
 
 TGT=nemo
-DOT=up_counter
-# DOT=orpsoc_top.express50MHz.nl
+DOT=up_counter.dot
+# DOT=orpsoc_top.express50MHz.nl.dot
+NETLIST=../up_counter.v
+# NETLIST=../orpsoc_top.express50MHz.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 PROTO=$(wildcard protobufs/*.proto)
@@ -46,7 +48,7 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -v -t nemo -o $(DOT).dot ../$(DOT).v /Volumes/ttrippel/A2/cp65npksdst.vm
+	../iverilog/bin/iverilog -t nemo -o $(DOT) $(NETLIST)
 
 clean:
 	rm -f *.o
