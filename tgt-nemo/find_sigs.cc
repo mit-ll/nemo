@@ -1,9 +1,13 @@
 #include "find_sigs.h"
 
-Sig_Finder::Sig_Finder(): root_scopes(NULL), num_root_scopes(0){}
+Sig_Finder::Sig_Finder(): root_scopes(NULL), num_root_scopes(0){
+	critical_sigs_regex = std::regex("[\(\ (to_)]sr\[0\]\|supv", std::regex_constants::grep);
+}
 
 Sig_Finder::Sig_Finder(ivl_scope_t* rs, unsigned int num_rs)
-	: root_scopes(rs), num_root_scopes(num_rs){}
+	: root_scopes(rs), num_root_scopes(num_rs){
+	critical_sigs_regex = std::regex("[\(\ (to_)]sr\[0\]\|supv", std::regex_constants::grep);
+}
 
 void Sig_Finder::enumerate_design_sigs(std::vector<TTB_Signal>& sigs){
 	// Find all signals in a design
@@ -36,8 +40,8 @@ void Sig_Finder::enumerate_sigs(ivl_scope_t scope, std::vector<TTB_Signal>& sigs
 		sig = ivl_scope_sig(scope, idx);
 		sigs.push_back(TTB_Signal(sig));
 
-		if std::regex_search(sigs.back()->name(), critical_sigs_regex){
-			printf("Found Critical Sig: %s\n", sigs.back()->name());
+		if (std::regex_search(sigs.back().name(), critical_sigs_regex)){
+			printf("Found Critical Sig: %s\n", sigs.back().name().c_str());
 		}
 	}
 }

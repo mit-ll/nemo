@@ -81,7 +81,6 @@ int target_design(ivl_design_t des) {
 
 	// Get root scopes of design
 	ivl_design_roots(des, &roots, &num_roots);
-	printf("Num root scopes: %d\n", num_roots);
 
 	// Find all the signals in the design
 	s_finder = Sig_Finder(roots, num_roots);
@@ -116,7 +115,7 @@ int target_design(ivl_design_t des) {
 
 	// Stop timer
 	duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-	printf("Execution Time %f (s)\n", duration);
+	printf("Execution Time: %f (s)\n", duration);
 	
 	return 0;
 }

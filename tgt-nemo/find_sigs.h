@@ -22,7 +22,8 @@ class Sig_Finder {
 		unsigned int num_root_scopes;
 		pthread_t threads[NUM_SIG_FINDER_THREADS];
 		std::vector<TTB_Signal> sig_subsets[NUM_SIG_FINDER_THREADS];
-		std::regex critical_sigs_regex("out", std::regex_constants::basic);
+		std::regex critical_sigs_regex;
+		
 		void enumerate_sigs(ivl_scope_t scope, std::vector<TTB_Signal>& sigs);
 };
 

@@ -12,8 +12,8 @@ CFLAGS=-I$(IDIR) -fpic -shared
 LIBS=-lpthread
 
 TGT=nemo
-DOT=up_counter
-# DOT=orpsoc_top.generic_low.nl
+# DOT=up_counter
+DOT=orpsoc_top.express50MHz.nl
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 # DEPS=ttb.h ttb_signal.h ttb_dot_file.h ivl_target.h
@@ -42,7 +42,7 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -t nemo -o $(DOT).dot ../$(DOT).v
+	../iverilog/bin/iverilog -v -t nemo -o $(DOT).dot ../$(DOT).v /Volumes/ttrippel/A2/cp65npksdst.vm
 
 clean:
 	rm -f *.o
