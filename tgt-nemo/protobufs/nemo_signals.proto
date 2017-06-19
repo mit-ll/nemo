@@ -1,0 +1,23 @@
+syntax = "proto2";
+package nemo;
+
+message Nemo_Signal {
+	enum sig_type_e {
+		SIG_NONE  = 0;
+		SIG_FF    = 1;
+		SIG_INPUT = 2;
+	}
+
+	required uint32 id			 = 1;
+	required string fullname     = 2;
+	required sig_type_e sig_type = 3;
+	optional uint64 msb          = 4;
+	optional uint64 lsb          = 5;
+	optional uint32 parent       = 6;
+	repeated uint32 children     = 7;
+}
+
+message Nemo_Signals {
+	map<string,uint32> name2sig  = 1;
+	repeated Nemo_Signal signals = 2;
+}
