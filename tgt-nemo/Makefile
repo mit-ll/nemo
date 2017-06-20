@@ -7,9 +7,9 @@ INSTALL_DATA = ${INSTALL} -m 644
 
 IDIR=../iverilog
 CC=g++
-CFLAGS=-I$(IDIR) -fpic -shared 
+CFLAGS=-I$(IDIR) -fpic -shared
 # -Wall -Wextra -Wshadow -g -O2
-LIBS=-lpthread -lprotobuf
+LIBS=-lprotobuf
 
 TGT=nemo
 DOT=up_counter.dot

@@ -18,6 +18,10 @@ void Dot_File::set_path(const char* p){
 	path = p;
 }
 
+const char* Dot_File::get_path(){
+	return path;
+}
+
 FILE* Dot_File::get_file_ptr(){
 	return file_ptr;
 }

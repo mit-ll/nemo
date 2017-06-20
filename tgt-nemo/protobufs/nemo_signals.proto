@@ -1,5 +1,5 @@
 syntax = "proto2";
-package nemo;
+package nemo_pb;
 
 message Nemo_Signal {
 	enum sig_type_e {
