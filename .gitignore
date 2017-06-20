@@ -7,3 +7,4 @@ iverilog/*
 *.tgt
 *.pb.cc
 *.pb.h
+*.pb.bin
