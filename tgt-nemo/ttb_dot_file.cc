@@ -3,9 +3,6 @@
 #include <vector>
 
 #include <ivl_target.h>
-
-#include "ttb.h"
-#include "ttb_signal.h"
 #include "ttb_dot_file.h"
 
 Dot_File::Dot_File(): path(NULL), file_ptr(NULL){}
@@ -39,33 +36,33 @@ void Dot_File::close_file(){
 	file_ptr = NULL;
 }
 
-void Dot_File::print_graph(std::vector<TTB_Signal> sigs, std::vector<connection_t> connections){
+void Dot_File::print_graph(Nemo_Design& nemo_des, vector<connection_t>& connections){
 	// Open output file
 	open_file();
 
 	// Print out nodes in the graph
 	fprintf(file_ptr, "digraph G {\n");
-	for (std::vector<TTB_Signal>::iterator it = sigs.begin(); it != sigs.end(); ++it ) {
+	for (vector<Nemo_Signal>::iterator it = nemo_des.get_sigs().begin(); it != nemo_des.get_sigs().end(); ++it ) {
 		// Make local signals just points instead of full nodes
-		if (ivl_signal_local(it->get_sig())) {
+		if (it->signal_local()) {
 			// Graph node is a circuit ...
-			fprintf(file_ptr, "\t\"%s\" [shape=point, label=\"%s[%lu:%lu]\"];\n", it->name().c_str(), it->name().c_str(), it->get_msb(), it->get_lsb());
+			fprintf(file_ptr, "\t\"%s\" [shape=point, label=\"%s[%lu:%lu]\"];\n", it->full_name().c_str(), it->full_name().c_str(), it->get_msb(), it->get_lsb());
 		} else if (it->is_ff()) {
 			// Graph node is a circuit flip-flop
-			fprintf(file_ptr, "\t\"%s\" [shape=square, label=\"%s[%lu:%lu]\"]; /* Flip Flop */\n", it->name().c_str(), it->name().c_str(), it->get_msb(), it->get_lsb());
+			fprintf(file_ptr, "\t\"%s\" [shape=square, label=\"%s[%lu:%lu]\"]; /* Flip Flop */\n", it->full_name().c_str(), it->full_name().c_str(), it->get_msb(), it->get_lsb());
 		} else if (it->is_input()) {
 			// Graph node is a circuit input
-			fprintf(file_ptr, "\t\"%s\" [shape=none, label=\"%s[%lu:%lu]\"]; /* Input */\n", it->name().c_str(), it->name().c_str(), it->get_msb(), it->get_lsb());
+			fprintf(file_ptr, "\t\"%s\" [shape=none, label=\"%s[%lu:%lu]\"]; /* Input */\n", it->full_name().c_str(), it->full_name().c_str(), it->get_msb(), it->get_lsb());
 		} else {
 			// Graph node is circuit output, or anything else 
-			fprintf(file_ptr, "\t\"%s\" [shape=ellipse, label=\"%s[%lu:%lu]\"];\n", it->name().c_str(), it->name().c_str(), it->get_msb(), it->get_lsb());
+			fprintf(file_ptr, "\t\"%s\" [shape=ellipse, label=\"%s[%lu:%lu]\"];\n", it->full_name().c_str(), it->full_name().c_str(), it->get_msb(), it->get_lsb());
 		}
 	}
 
 	//  Print out connections in the graph
-	for (std::vector<connection_t>::iterator it = connections.begin(); it != connections.end(); ++it) {
-		fprintf(file_ptr, "\t\"%s\" -> \"%s\"[label=\"[%lu:%lu]->[%lu:%lu]\"];\n", it->second.name().c_str(),
-		it->first.name().c_str(), it->second.get_msb(), it->second.get_lsb(), it->first.get_msb(), it->first.get_lsb());
+	for (vector<connection_t>::iterator it = connections.begin(); it != connections.end(); ++it) {
+		fprintf(file_ptr, "\t\"%s\" -> \"%s\"[label=\"[%lu:%lu]->[%lu:%lu]\"];\n", it->second.full_name().c_str(),
+		it->first.full_name().c_str(), it->second.get_msb(), it->second.get_lsb(), it->first.get_msb(), it->first.get_lsb());
 	}
 
 	fprintf(file_ptr, "}\n");

@@ -8,7 +8,7 @@
 #include "ttb_signal.h"
 
 /* Signals are easy... ish */
-void propagate_sig(TTB_Signal& aff_sig, std::vector<connection_t>& connections) {
+void propagate_sig(ivl_signal_t aff_sig, Nemo_Signals& nemo_sigs, std::vector<connection_t>& connections) {
 	ivl_signal_t    	sig;
 	ivl_net_logic_t 	log;
 	ivl_lpm_t       	lpm;
@@ -17,8 +17,8 @@ void propagate_sig(TTB_Signal& aff_sig, std::vector<connection_t>& connections) 
 	//First get its nexus
 	//@TODO: Deal with larger vectors (more than one nexus)
 	//@TODO: Figure out how more than one nexus works...
-	const int base  = ivl_signal_array_base(aff_sig.get_sig());
-	const int count = ivl_signal_array_count(aff_sig.get_sig());
+	const int base  = ivl_signal_array_base(aff_sig);
+	const int count = ivl_signal_array_count(aff_sig);
 	assert(count >= 0);
 	if (count > 1) {
 		fprintf(stderr, "Error: Skipping Arrayed Signal: %s\n", aff_sig.name().c_str());

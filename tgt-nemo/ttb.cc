@@ -10,55 +10,14 @@
 #include <vector>
 
 #include "ttb.h"
-#include "ttb_signal.h"
 #include "ttb_dot_file.h"
-#include "find_sigs.h"
 #include "nemo_signals.pb.h"
 
+using namespace std;
 using namespace nemo_pb;
 
-void print_connection(const TTB_Signal& aff_sig, const TTB_Signal& sig, std::vector<connection_t>& connections) {
-	connections.push_back(connection_t(aff_sig, sig));
-}
-
-// int show_process(ivl_process_t net, void* x) {
-// 	std::pair<sig_map_t*, std::vector<connection_t>* >* data = (std::pair<sig_map_t*, std::vector<connection_t>* >*)x;
-// 	sig_map_t* ffs = data->first;
-// 	std::vector<connection_t>* connections = data->second;
-// 	/* Error Checking */
-// 	switch(ivl_process_type(net)) {
-// 		case IVL_PR_INITIAL:
-// 			fprintf(stderr, "WARNING: Skipping Initial Block\n");
-// 			fprintf(stderr, "File: %s Line: %d\n", ivl_process_file(net), ivl_process_lineno(net));
-// 			return 0;
-// 			break;
-
-// 		case IVL_PR_FINAL:
-// 			fprintf(stderr, "WARNING: Skipping Final Block\n");
-// 			fprintf(stderr, "File: %s Line: %d\n", ivl_process_file(net), ivl_process_lineno(net));
-// 			return 0;
-// 			break;
-
-// 		case IVL_PR_ALWAYS:
-// 			if (ivl_process_analog(net)) {
-// 				fprintf(stderr, "ERROR: Analog Always Blocks Not Supported\n");
-// 				fprintf(stderr, "File: %s Line: %d\n", ivl_process_file(net), ivl_process_lineno(net));
-// 				return 3;
-// 			}
-// 			break;
-
-// 		default:
-// 			fprintf(stderr, "ERROR: Unknown Process\n");
-// 			fprintf(stderr, "File: %s Line: %d\n", ivl_process_file(net), ivl_process_lineno(net));
-// 			return 4;
-// 			break;
-// 	} /* End Error Checking */
-
-// 	// At this point, should only have always blocks
-// 	ivl_statement_t stmt = ivl_process_stmt(net);
-
-// 	int ret = process_statement(stmt, *ffs, *connections);
-// 	return ret;
+// void print_connection(const TTB_Signal& aff_sig, const TTB_Signal& sig, std::vector<connection_t>& connections) {
+// 	connections.push_back(connection_t(aff_sig, sig));
 // }
 
 // *** "Main"/Entry Point *** of iverilog target
@@ -67,15 +26,11 @@ int target_design(ivl_design_t des) {
 	// compatible with the version of the headers we compiled against.
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-	int          			  rc;
 	ivl_scope_t* 			  roots = 0;   // root scopes of the design
 	unsigned int 			  num_roots;   // number of root scopes of the design
-	Nemo_Signals 			  sigs;		   // all signals in the design (protobuf DS)
-	std::vector<ivl_signal_t> ivl_sigs;	   // all signals in the design (ivl signals) 
-	// sig_map_t 				  sig_map;	   // hash map btwn signal names (key) and signal objs (value)
+	Nemo_Design 			  nemo_des;	   // all signals in the design
 	// std::vector<connection_t> connections; // all pair-wise signal connections
-	Dot_File 				  df;		   // output dot file to represent signal graph
-	Sig_Finder  		  	  s_finder;    // object to parse scopes and find signals
+	// Dot_File 				  df;		   // output dot file to represent signal graph
 
 	// Variables to calculate runtime of this target module
 	std::clock_t start;
@@ -91,27 +46,23 @@ int target_design(ivl_design_t des) {
 	ivl_design_roots(des, &roots, &num_roots);
 
 	// Find all the signals in the design
-	s_finder = Sig_Finder(roots, num_roots);
-	s_finder.enumerate_design_sigs(sigs, ivl_sigs);
+	nemo_des = Nemo_Design(roots, num_roots);
 
 	// Determing connections for all signals
-	for ( std::vector<ivl_signal_t>::iterator it = ivl_sigs.begin(); it != ivl_sigs.end(); ++it ) {
-		//@TODO: Support more than 1 dimension vector
-		//       Though it looks like it should be ok for OR1200
-		assert(ivl_signal_packed_dimensions(*it) <= 1);
-		propagate_sig(*it, connections);
-	}
+	// for ( std::vector<ivl_signal_t>::iterator it = ivl_sigs.begin(); it != ivl_sigs.end(); ++it ) {
+	// 	//@TODO: Support more than 1 dimension vector
+	// 	//       Though it looks like it should be ok for OR1200
+	// 	assert(ivl_signal_packed_dimensions(*it) <= 1);
+	// 	propagate_sig(*it, sigs, connections);
+	// }
 
 	// // We have to put them in a pair b/c I have to pass a single pointer
 	// std::pair<sig_map_t*, std::vector<connection_t>* > data(&sig_map, &connections);
 
-	// // Goes through all assignments in always blocks
-	// // Print out all the assignments
-	// rc = ivl_design_process(des, show_process, &data);
-	// if (rc != 0) {
-	// 	fprintf(stderr, "ERROR: Could not process always blocks\n");
-	// 	return rc;
-	// }
+	// Save Protobufs
+	if (!nemo_des.loaded_from_pb()){
+		nemo_des.save_pb();	
+	}
 
 	// Print out dot graph
 	// df.print_graph(sigs, connections);
@@ -122,5 +73,6 @@ int target_design(ivl_design_t des) {
 	
 	// Delete all global objects allocated by libprotobuf
 	google::protobuf::ShutdownProtobufLibrary();
+
 	return 0;
 }

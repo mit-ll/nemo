@@ -1,0 +1,21 @@
+syntax = "proto2";
+package nemo_pb;
+
+message Nemo_Signal_PB {
+	enum sig_type_e {
+		SIG_NONE  = 0;
+		SIG_FF    = 1;
+		SIG_INPUT = 2;
+	}
+
+	required uint32     id		   = 1;
+	required string     scope_name = 2;
+	required string     base_name  = 3;
+	required string     full_name  = 4;
+	required sig_type_e type       = 5;
+	required uint32     local      = 6;
+	optional uint64     msb        = 7;
+	optional uint64     lsb        = 8;
+	repeated uint32     parents    = 9;
+	repeated uint32     children   = 10;
+}

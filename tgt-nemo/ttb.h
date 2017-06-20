@@ -14,18 +14,20 @@
 #include <string>
 #include <vector>
 
+#include "nemo_design.h"
 #include <ivl_target.h>
-#include "ttb_signal.h"
 
-typedef std::map<std::string, TTB_Signal*> sig_map_t;
+using namespace std;
+
+// typedef std::map<std::string, TTB_Signal*> sig_map_t;
 
 // Cannot be pointers since these signals could be slices
-typedef std::pair<TTB_Signal, TTB_Signal> connection_t;
+typedef pair<Nemo_Signal, Nemo_Signal> connection_t;
 
-extern void propagate_sig(TTB_Signal& aff_sig, std::vector<connection_t>& connections);
-extern void propagate_lpm(const ivl_lpm_t lpm, TTB_Signal& aff_sig, std::vector<connection_t>& connections);
-extern void propagate_log(const ivl_net_logic_t logic, TTB_Signal& aff_sig, std::vector<connection_t>& connections);
-extern int  process_statement(ivl_statement_t stmt, sig_map_t& ffs, std::vector<connection_t>& connections);
-extern void print_connection(const TTB_Signal& aff_sig, const TTB_Signal& sig, std::vector<connection_t>& connections);
+// extern void propagate_sig(ivl_signal_t aff_sig, Nemo_Signals& nemo_sigs, std::vector<connection_t>& connections);
+// extern void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, std::vector<connection_t>& connections);
+// extern void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, std::vector<connection_t>& connections);
+// extern int  process_statement(ivl_statement_t stmt, sig_map_t& ffs, std::vector<connection_t>& connections);
+// extern void print_connection(const Nemo_Signal& aff_sig, const Nemo_Signal& sig, std::vector<connection_t>& connections);
 
 #endif
