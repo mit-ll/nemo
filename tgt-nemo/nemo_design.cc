@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
@@ -19,7 +20,7 @@ Nemo_Design::Nemo_Design(ivl_scope_t* rs, unsigned int num_rs, string& pb_fn)
 }
 
 void Nemo_Design::save_pb(){
-	int fd = open(pb_filename.c_str(), O_CREAT | O_WRONLY);
+	int fd = open(pb_filename.c_str(), O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
 	ZeroCopyOutputStream* raw_output   = new FileOutputStream(fd);
 	CodedOutputStream* 	  coded_output = new CodedOutputStream(raw_output);
 	
@@ -33,7 +34,7 @@ void Nemo_Design::save_pb(){
 		 	exit(-4);
 		}
 	}
-	printf("Done writing protobuf to file.\n");
+	printf("Done writing protobuf to file.\n\n");
 	
 	delete coded_output;
 	delete raw_output;
@@ -48,8 +49,45 @@ bool Nemo_Design::loaded_from_pb(){
 	return ivl_data_missing;
 }
 
-vector<Nemo_Signal>& Nemo_Design::get_sigs(){
+Nemo_Signal Nemo_Design::get_nemo_sig(unsigned int sig_id){
+	return nemo_sigs[sig_id];
+}
+
+vector<Nemo_Signal>& Nemo_Design::get_nemo_sigs(){
 	return nemo_sigs;	
+}
+
+vector<ivl_signal_t>& Nemo_Design::get_ivl_sigs(){
+	return ivl_sigs;	
+}
+
+const string& Nemo_Design::get_sig_name(ivl_signal_t sig){
+	return nemo_sigs[ivl2nemo[sig]].full_name();
+}
+
+const string& Nemo_Design::get_sig_name(unsigned int sig_id){
+	return nemo_sigs[sig_id].full_name();
+}
+
+vector<connection_t>& Nemo_Design::get_connections(){
+	return connections;
+}
+
+void Nemo_Design::add_connection(ivl_signal_t aff_sig, ivl_signal_t sig){
+	unsigned int aff_sig_id = get_id(aff_sig);
+	unsigned int sig_id     = get_id(sig);
+	add_connection_to_nemo_signal(aff_sig_id, sig_id);
+	connections.push_back(connection_t(aff_sig_id, sig_id));
+}
+
+void Nemo_Design::add_connection_to_nemo_signal(unsigned int aff_sig_id, unsigned int sig_id){
+	nemo_sigs[aff_sig_id].add_connection(sig_id);
+}
+
+void Nemo_Design::debug_print_all_nemo_sigs(){
+	for(vector<Nemo_Signal>::iterator it = nemo_sigs.begin(); it != nemo_sigs.end(); ++it){
+		it->debug_print_nemo_sig();
+	} 
 }
 
 void Nemo_Design::load_design_signals(){
@@ -59,7 +97,7 @@ void Nemo_Design::load_design_signals(){
 		for (unsigned int i = 0; i < num_root_scopes; i++) {
 			load_from_ivl(root_scopes[i]);
 		}
-		printf("Done parsing iverilog signals.\n");
+		printf("Done parsing iverilog signals.\n\n");
 	} else{
 		// Load signals from protobuf file
 		printf("Found signal protobufs file (%s)!\n", pb_filename.c_str());
@@ -70,7 +108,7 @@ void Nemo_Design::load_design_signals(){
 void Nemo_Design::load_from_ivl(ivl_scope_t scope){
 	//@TODO: Look more into dealing with scopes that are tasks or functions
 	if (ivl_scope_type(scope) != IVL_SCT_MODULE && ivl_scope_type(scope) != IVL_SCT_BEGIN && ivl_scope_type(scope) != IVL_SCT_TASK ) {
-		fprintf(stderr, "ERROR: Cannot parse scope type (%d)\n", ivl_scope_type(scope));
+		fprintf(stderr, "ERROR: cannot parse scope type (%d)\n", ivl_scope_type(scope));
 		fprintf(stderr, "File: %s Line: %d\n", ivl_scope_file(scope), ivl_scope_lineno(scope));
 		return;
 	}
@@ -100,17 +138,28 @@ void Nemo_Design::load_from_pb(){
 	
 	// Read num_sigs from PB file
 	coded_input->ReadLittleEndian32(&num_sigs);
+	if (DEBUG_PRINTS){
+		printf("Number of Signals to Load: %d\n", num_sigs);
+	}
 
 	// Read signal objects from PB file
 	printf("Loading signal protobufs from %s ...\n", pb_filename.c_str());
 	for(unsigned int i=0; i<num_sigs; i++){
 		nemo_sigs.push_back(Nemo_Signal());
+		if (DEBUG_PRINTS){
+			printf("\n---- Before Signal Loaded: ----\n");
+			nemo_sigs.back().debug_print_nemo_sig();
+		}
 		if (!nemo_sigs.back().read_pb_from_file(coded_input)){
 			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", pb_filename.c_str());
 		 	exit(-4);
 		}
+		if (DEBUG_PRINTS){
+			printf("---- After Signal Loaded: ----\n");
+			nemo_sigs.back().debug_print_nemo_sig();
+		}
 	}
-	printf("Done loading signal protobufs.\n");
+	printf("Done loading signal protobufs.\n\n");
 
 	delete coded_input;
 	delete raw_input;
@@ -119,6 +168,5 @@ void Nemo_Design::load_from_pb(){
 
 bool Nemo_Design::fexists(string& filename){
 	ifstream ifile(filename.c_str());
-	printf("%d\n", (int)ifile);
-	return (bool)ifile;
+	return ifile.good();
 }

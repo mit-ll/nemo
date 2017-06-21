@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "nemo_signal.h"
 
 Nemo_Signal::Nemo_Signal(){}
@@ -41,6 +42,10 @@ int Nemo_Signal::signal_local() const{
 	return sig.local();
 }
 
+unsigned int Nemo_Signal::get_dimensions() const{
+	return sig.dimensions();
+}
+
 const string& Nemo_Signal::scope_name() const{
 	return sig.scope_name();
 }
@@ -53,12 +58,16 @@ const string& Nemo_Signal::full_name() const{
 	return sig.full_name();
 }
 
+void Nemo_Signal::add_connection(unsigned int sig_id){
+	sig.add_connections(sig_id);
+}
+
 bool Nemo_Signal::read_pb_from_file(CodedInputStream* strm){
 	unsigned int size;
 	int 		 read_limit;
 	
 	// Read size of protobuf
-	if (!strm->ReadVarint32(&size)){
+	if (!strm->ReadLittleEndian32(&size)){
 		return false;
 	}
 
@@ -72,7 +81,21 @@ bool Nemo_Signal::read_pb_from_file(CodedInputStream* strm){
 	if (!strm->ConsumedEntireMessage()){
 		return false;
 	}
+	strm->PopLimit(read_limit);
 	return true;
+}
+
+void Nemo_Signal::debug_print_nemo_sig(){
+	printf("Signal ID   = %d\n", sig.has_id() ? sig.id() : -1);
+	printf("Scope Name  = %s\n", sig.has_scope_name() ? sig.scope_name().c_str() : "none");
+	printf("Base Name   = %s\n", sig.has_base_name() ? sig.base_name().c_str() : "none");
+	printf("Full Name   = %s\n", sig.has_full_name() ? sig.full_name().c_str() : "none");
+	printf("Type        = %d\n", sig.has_type() ? (int)sig.type() : -1);
+	printf("Local       = %d\n", sig.has_local() ? sig.local() : -1);
+	printf("Dimensions  = %d\n", sig.has_dimensions() ? sig.dimensions() : -1);
+	printf("MSB         = %llu\n", sig.has_msb() ? sig.msb() : -1);
+	printf("LSB         = %llu\n", sig.has_lsb() ? sig.lsb() : -1);
+	printf("Connections = %d\n", sig.connections_size());
 }
 
 void Nemo_Signal::init_from_ivl(ivl_signal_t s, unsigned int s_id){
@@ -82,12 +105,14 @@ void Nemo_Signal::init_from_ivl(ivl_signal_t s, unsigned int s_id){
 	// Set Signal ID number (index into signal array)
 	sig.set_id(s_id);
 
+	// Set Signal Dimenions
+	sig.set_dimensions(ivl_signal_packed_dimensions(s));
+
 	// Set MSB and LSB dimensions
-	unsigned num_dimens = ivl_signal_packed_dimensions(s);
-	if (num_dimens == 0) {
+	if (sig.dimensions() == 0) {
 		sig.set_msb(0);
 		sig.set_lsb(0);
-	} else if (num_dimens == 1) {
+	} else if (sig.dimensions() == 1) {
 		sig.set_msb(ivl_signal_packed_msb(s, 0));
 		sig.set_lsb(ivl_signal_packed_lsb(s, 0));
 	} else {

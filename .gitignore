@@ -8,3 +8,4 @@ iverilog/*
 *.pb.cc
 *.pb.h
 *.pb.bin
+*.out

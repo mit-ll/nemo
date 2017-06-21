@@ -12,10 +12,10 @@ CFLAGS=-I$(IDIR) -fpic -shared
 LIBS=-lprotobuf
 
 TGT=nemo
-DOT=up_counter.dot
-# DOT=orpsoc_top.express50MHz.nl.dot
-NETLIST=../up_counter.v
-# NETLIST=../orpsoc_top.express50MHz.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
+# DOT=up_counter.dot
+DOT=orpsoc_top.express50MHz.nl.dot
+# NETLIST=../up_counter.v
+NETLIST=../orpsoc_top.express50MHz.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 PROTO=$(wildcard protobufs/*.proto)
@@ -59,5 +59,6 @@ clean:
 cleanproto:
 	rm -f *.pb.cc
 	rm -f *.pb.h
+	rm -f *.pb.bin
 
 cleanall: clean cleanproto uninstall

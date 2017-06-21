@@ -19,15 +19,18 @@
 
 using namespace std;
 
-// typedef std::map<std::string, TTB_Signal*> sig_map_t;
+extern void propagate_sig(
+	ivl_signal_t aff_sig,
+	Nemo_Design& nemo_des);
 
-// Cannot be pointers since these signals could be slices
-typedef pair<Nemo_Signal, Nemo_Signal> connection_t;
+// extern void propagate_lpm(
+// 	const ivl_lpm_t lpm, 
+// 	ivl_signal_t    aff_sig,
+// 	Nemo_Design&    nemo_des);
 
-// extern void propagate_sig(ivl_signal_t aff_sig, Nemo_Signals& nemo_sigs, std::vector<connection_t>& connections);
-// extern void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, std::vector<connection_t>& connections);
-// extern void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, std::vector<connection_t>& connections);
-// extern int  process_statement(ivl_statement_t stmt, sig_map_t& ffs, std::vector<connection_t>& connections);
-// extern void print_connection(const Nemo_Signal& aff_sig, const Nemo_Signal& sig, std::vector<connection_t>& connections);
+extern void propagate_log(
+	const ivl_net_logic_t logic, 
+	ivl_signal_t          aff_sig,
+	Nemo_Design&          nemo_des);
 
 #endif

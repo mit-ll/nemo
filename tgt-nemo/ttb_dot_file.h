@@ -15,7 +15,7 @@ class Dot_File {
 		Dot_File(const char* p);
 		void        set_path(const char* p);
 		const char* get_path();
-		void        print_graph(Nemo_Design& nemo_des, vector<connection_t>& connections);
+		void        print_graph(Nemo_Design& nemo_des);
 	private:
 		const char* path;
 		FILE* 		file_ptr;

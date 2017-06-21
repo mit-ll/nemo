@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <ivl_target.h>
+#include "nemo_design.h"
 #include "ttb_dot_file.h"
 
 Dot_File::Dot_File(): path(NULL), file_ptr(NULL){}
@@ -36,13 +37,13 @@ void Dot_File::close_file(){
 	file_ptr = NULL;
 }
 
-void Dot_File::print_graph(Nemo_Design& nemo_des, vector<connection_t>& connections){
+void Dot_File::print_graph(Nemo_Design& nemo_des){
 	// Open output file
 	open_file();
 
 	// Print out nodes in the graph
 	fprintf(file_ptr, "digraph G {\n");
-	for (vector<Nemo_Signal>::iterator it = nemo_des.get_sigs().begin(); it != nemo_des.get_sigs().end(); ++it ) {
+	for (vector<Nemo_Signal>::iterator it = nemo_des.get_nemo_sigs().begin(); it != nemo_des.get_nemo_sigs().end(); ++it ) {
 		// Make local signals just points instead of full nodes
 		if (it->signal_local()) {
 			// Graph node is a circuit ...
@@ -60,9 +61,10 @@ void Dot_File::print_graph(Nemo_Design& nemo_des, vector<connection_t>& connecti
 	}
 
 	//  Print out connections in the graph
-	for (vector<connection_t>::iterator it = connections.begin(); it != connections.end(); ++it) {
-		fprintf(file_ptr, "\t\"%s\" -> \"%s\"[label=\"[%lu:%lu]->[%lu:%lu]\"];\n", it->second.full_name().c_str(),
-		it->first.full_name().c_str(), it->second.get_msb(), it->second.get_lsb(), it->first.get_msb(), it->first.get_lsb());
+	for (vector<connection_t>::iterator it = nemo_des.get_connections().begin(); it != nemo_des.get_connections().end(); ++it){
+		fprintf(file_ptr, "\t\"%s\" -> \"%s\"[label=\"[%lu:%lu]->[%lu:%lu]\"];\n", nemo_des.get_sig_name(it->second).c_str(),
+		nemo_des.get_sig_name(it->first).c_str(), nemo_des.get_nemo_sig(it->second).get_msb(), nemo_des.get_nemo_sig(it->second).get_lsb(), 
+		nemo_des.get_nemo_sig(it->first).get_msb(), nemo_des.get_nemo_sig(it->first).get_lsb());
 	}
 
 	fprintf(file_ptr, "}\n");
