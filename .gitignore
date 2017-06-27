@@ -9,3 +9,4 @@ iverilog/*
 *.pb.h
 *.pb.bin
 *.out
+*.txt

@@ -34,7 +34,9 @@ class Nemo_Design{
 		const string& 			get_sig_name(ivl_signal_t sig);
 		const string& 			get_sig_name(unsigned int sig_id);
 		vector<connection_t>& 	get_connections();
+		void 					add_connection(ivl_signal_t aff_sig, unsigned int sig_id);
 		void 					add_connection(ivl_signal_t aff_sig, ivl_signal_t sig);
+		unsigned int 			add_duplicate_from_ivl(ivl_signal_t new_sig);
 		void 					debug_print_all_nemo_sigs();
 	private:
 		ivl_scope_t*                    root_scopes;	  // root ivl scopes

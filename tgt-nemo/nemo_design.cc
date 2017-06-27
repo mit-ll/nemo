@@ -73,6 +73,12 @@ vector<connection_t>& Nemo_Design::get_connections(){
 	return connections;
 }
 
+void Nemo_Design::add_connection(ivl_signal_t aff_sig, unsigned int sig_id){
+	unsigned int aff_sig_id = get_id(aff_sig);
+	add_connection_to_nemo_signal(aff_sig_id, sig_id);
+	connections.push_back(connection_t(aff_sig_id, sig_id));
+}
+
 void Nemo_Design::add_connection(ivl_signal_t aff_sig, ivl_signal_t sig){
 	unsigned int aff_sig_id = get_id(aff_sig);
 	unsigned int sig_id     = get_id(sig);
@@ -88,6 +94,11 @@ void Nemo_Design::debug_print_all_nemo_sigs(){
 	for(vector<Nemo_Signal>::iterator it = nemo_sigs.begin(); it != nemo_sigs.end(); ++it){
 		it->debug_print_nemo_sig();
 	} 
+}
+
+unsigned int Nemo_Design::add_duplicate_from_ivl(ivl_signal_t new_sig){
+	nemo_sigs.push_back(Nemo_Signal(new_sig, num_sigs++));
+	return (num_sigs - 1);
 }
 
 void Nemo_Design::load_design_signals(){

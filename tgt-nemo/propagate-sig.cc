@@ -53,19 +53,28 @@ void propagate_sig(ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
 				}
 			}
 			else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))){
-				assert(false && "LPMs are unsupported nexus pointers.\n");
+				// assert(false && "LPMs are unsupported nexus pointers.\n");
+				// printf("LPMs are unsupported nexus pointers. (name: %s, type: %d)\n", ivl_lpm_basename(lpm), ivl_lpm_type(lpm));
+				if (ivl_lpm_q(lpm) == nex) {
+					propagate_lpm(lpm, aff_sig, nemo_des);
+         		}
 			}
 			else if ((swt = ivl_nexus_ptr_switch(nex_ptr))){
 				assert(false && "Switches are unsupported nexus pointers.\n");
+				// printf("Switches are unsupported nexus pointers. (%s)\n", ivl_switch_basename(swt));
 			}
 			else if ((con = ivl_nexus_ptr_con(nex_ptr))){
-				assert(false && "Constants are unsupported nexus pointers.\n");
+				// assert(false && "Constants are unsupported nexus pointers.\n");
+				// printf("Constants are unsupported nexus pointers. (bits: %s, type: %d)\n", ivl_const_bits(con), ivl_const_type(con));
+				continue;
 			}
 			else if ((bra = ivl_nexus_ptr_branch(nex_ptr))){
 				assert(false && "Branches are unsupported nexus pointers.\n");
+				// printf("Branches are unsupported nexus pointers. (Faulting Signal: %s)\n", nemo_des.get_sig_name(aff_sig).c_str());
 			}
 			else{
 				assert(false && "? are unsupported nexus pointers.\n");	
+				// printf("? are unsupported nexus pointers. (Faulting Signal: %s)\n", nemo_des.get_sig_name(aff_sig).c_str());
 			}
 		}
 	}

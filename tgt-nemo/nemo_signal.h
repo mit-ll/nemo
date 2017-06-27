@@ -21,6 +21,8 @@ class Nemo_Signal{
 		unsigned int  get_dimensions() const;
 		unsigned long get_lsb() const;
 		unsigned long get_msb() const;
+		void 		  set_lsb(unsigned long lsb);
+		void 		  set_msb(unsigned long msb);
 		bool          is_ff() const;
 		bool          is_input() const;
 		int 		  signal_local() const;

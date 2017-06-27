@@ -30,6 +30,14 @@ unsigned long Nemo_Signal::get_msb() const{
 	return sig.msb();
 }
 
+void Nemo_Signal::set_lsb(unsigned long lsb){
+	sig.set_lsb(lsb);
+}
+
+void Nemo_Signal::set_msb(unsigned long msb){
+	sig.set_msb(msb);
+}
+
 bool Nemo_Signal::is_ff() const{
 	return (sig.type() == Nemo_Signal_PB::SIG_FF);
 }

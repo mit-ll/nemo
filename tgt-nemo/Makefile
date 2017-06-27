@@ -48,7 +48,10 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -t nemo -o $(DOT) $(NETLIST)
+	../iverilog/bin/iverilog -v -t nemo -o $(DOT) $(NETLIST)
+
+runsave:
+	../iverilog/bin/iverilog -v -t nemo -o $(DOT) $(NETLIST) > test4.txt
 
 clean:
 	rm -f *.o

@@ -23,10 +23,10 @@ extern void propagate_sig(
 	ivl_signal_t aff_sig,
 	Nemo_Design& nemo_des);
 
-// extern void propagate_lpm(
-// 	const ivl_lpm_t lpm, 
-// 	ivl_signal_t    aff_sig,
-// 	Nemo_Design&    nemo_des);
+extern void propagate_lpm(
+	const ivl_lpm_t lpm, 
+	ivl_signal_t    aff_sig,
+	Nemo_Design&    nemo_des);
 
 extern void propagate_log(
 	const ivl_net_logic_t logic, 
