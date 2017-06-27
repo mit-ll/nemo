@@ -1,12 +1,12 @@
 #include <cassert>
 
 #include "ivl_target.h"
-#include "ttb.h"
+#include "nemo_design.h"
 
 /**
  * Finds the width (in bits) of a nexus
  */
-static unsigned get_nexus_width(ivl_nexus_t nex) {
+unsigned Nemo_Design::get_nexus_width(ivl_nexus_t nex) {
 	ivl_signal_t sig = 0;
 
 	for (unsigned idx = 0 ; idx < ivl_nexus_ptrs(nex) ; idx += 1) {
@@ -20,30 +20,33 @@ static unsigned get_nexus_width(ivl_nexus_t nex) {
 	return 0;
 } 
 
-static void add_lpm_connection(ivl_nexus_t nex, const ivl_signal_t aff_sig, ivl_lpm_t lpm, Nemo_Design& nemo_des) {
+void Nemo_Design::add_lpm_connection(ivl_nexus_t nex, const ivl_signal_t aff_sig, ivl_lpm_t lpm){
 	ivl_signal_t  sig;
-	unsigned int  nsig_id;
+	Nemo_Signal*  new_sig;
 	unsigned long lsb;
 	unsigned long msb;
 
 	// Iterate over nexus pointers
 	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i++) {
 		if ((sig = ivl_nexus_ptr_sig(ivl_nexus_ptr(nex, i)))){
-			nsig_id = nemo_des.add_duplicate_from_ivl(sig);
+			new_sig = add_spliced_signal(sig);
 			if (lpm) {
 				lsb = ivl_lpm_base(lpm);
 				msb = lsb + ivl_lpm_width(lpm) - 1;
-				nemo_des.get_nemo_sig(nsig_id).set_lsb(lsb);
-				nemo_des.get_nemo_sig(nsig_id).set_msb(msb);
+				new_sig->set_lsb(lsb);
+				new_sig->set_msb(msb);
 			}
-			nemo_des.add_connection(aff_sig, nsig_id);
+			add_connection(aff_sig, new_sig->get_id());
 		}
+		// else{
+		// 	printf("LPM input is another LPM or Logic(affected signal: %s)\n", ivl_signal_basename(aff_sig));
+		// }
 	}
 }
 
-void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
+void Nemo_Design::propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig) {
 	const ivl_lpm_type_t lpm_type   = ivl_lpm_type(lpm);
-	const unsigned int   aff_sig_id = nemo_des.get_id(aff_sig);
+	const unsigned int   aff_sig_id = get_id(aff_sig);
 	ivl_nexus_t          input_nexus;
 	ivl_signal_t         sig;
 
@@ -56,8 +59,8 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Nemo_Design& nemo_
 				fprintf(stderr, "File: %s Line: %d\n", ivl_lpm_file(lpm), ivl_lpm_lineno(lpm));
 				break;
 			}
-			input_nexus = ivl_lpm_data(lpm, 0);
-			add_lpm_connection(input_nexus, aff_sig, lpm, nemo_des);
+			input_nexus = ivl_lpm_data(lpm, 0); // extract input (0) pin nexus
+			add_lpm_connection(input_nexus, aff_sig, lpm);
 			break;
 
 		/* part select: part select to vector (part select in lval) */
@@ -68,27 +71,27 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Nemo_Design& nemo_
 				fprintf(stderr, "File: %s Line: %d\n", ivl_lpm_file(lpm), ivl_lpm_lineno(lpm));
 				break;
 			}
-			nemo_des.get_nemo_sig(aff_sig_id).set_lsb(ivl_lpm_base(lpm));
-			nemo_des.get_nemo_sig(aff_sig_id).set_msb(ivl_lpm_base(lpm) + ivl_lpm_width(lpm));
+			get_nemo_sig(aff_sig_id)->set_lsb(ivl_lpm_base(lpm));
+			get_nemo_sig(aff_sig_id)->set_msb(ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1);
 			input_nexus = ivl_lpm_data(lpm, 0);
-			add_lpm_connection(input_nexus, aff_sig, lpm, nemo_des);
+			add_lpm_connection(input_nexus, aff_sig, lpm);
 			break;
 
 		case IVL_LPM_CONCAT:
 		case IVL_LPM_CONCATZ: {
 			/* Transparent concat */
-			unsigned long lsb      = nemo_des.get_nemo_sig(aff_sig_id).get_lsb();
+			unsigned long lsb      = get_nemo_sig(aff_sig_id)->get_lsb();
 			unsigned long curr_lsb = lsb;
-			unsigned long msb      = nemo_des.get_nemo_sig(aff_sig_id).get_msb();
+			unsigned long msb      = get_nemo_sig(aff_sig_id)->get_msb();
 			for (unsigned int idx = 0; idx < ivl_lpm_size(lpm); idx++) {
 				input_nexus = ivl_lpm_data(lpm, idx);
-				nemo_des.get_nemo_sig(aff_sig_id).set_lsb(curr_lsb);
-				nemo_des.get_nemo_sig(aff_sig_id).set_msb(curr_lsb + get_nexus_width(input_nexus) - 1);
+				get_nemo_sig(aff_sig_id)->set_lsb(curr_lsb);
+				get_nemo_sig(aff_sig_id)->set_msb(curr_lsb + get_nexus_width(input_nexus) - 1);
 				curr_lsb = curr_lsb + get_nexus_width(input_nexus);
-				add_lpm_connection(input_nexus, aff_sig, 0, nemo_des);
+				add_lpm_connection(input_nexus, aff_sig, 0);
 			}
-			nemo_des.get_nemo_sig(aff_sig_id).set_msb(msb);
-			nemo_des.get_nemo_sig(aff_sig_id).set_lsb(lsb);
+			get_nemo_sig(aff_sig_id)->set_msb(msb);
+			get_nemo_sig(aff_sig_id)->set_lsb(lsb);
 			}
 			break;
 

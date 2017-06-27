@@ -1,6 +1,0 @@
-syntax = "proto2";
-package nemo_pb;
-
-message Nemo_Signals_PB {
-	repeated uint32 roots = 1;
-}

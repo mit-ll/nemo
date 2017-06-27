@@ -3,10 +3,11 @@
 #include <cstdio>
 
 #include "ivl_target.h"
-#include "ttb.h"
+#include "nemo_design.h"
+
 
 /* Signals are easy... ish */
-void propagate_sig(ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
+void Nemo_Design::propagate_sig(ivl_signal_t aff_sig) {
 	ivl_net_const_t con;
 	ivl_net_logic_t logic;
 	ivl_lpm_t       lpm;
@@ -22,7 +23,7 @@ void propagate_sig(ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
 	const int count = ivl_signal_array_count(aff_sig);
 	assert(count >= 0);
 	if (count > 1) {
-		fprintf(stderr, "Error: Skipping Arrayed Signal: %s\n", nemo_des.get_sig_name(aff_sig).c_str());
+		fprintf(stderr, "Error: Skipping Arrayed Signal: %s\n", ivl_signal_basename(aff_sig));
 		fprintf(stderr, "File: %s Line: %d\n", ivl_signal_file(aff_sig), ivl_signal_lineno(aff_sig));
 		return;
 	}
@@ -43,25 +44,23 @@ void propagate_sig(ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
 				
 				// If the signal is different signal --> add connection
 				if (aff_sig != sig){
-					nemo_des.add_connection(aff_sig, sig);
+					add_connection(aff_sig, sig);
 				}
 			}
 			else if ((logic = ivl_nexus_ptr_log(nex_ptr))){
 				// Pin 0 is the output of every logic device
 				if (ivl_logic_pin(logic, 0) == nex) {
-					propagate_log(logic, aff_sig, nemo_des);
+					propagate_log(logic, aff_sig);
 				}
 			}
 			else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))){
 				// assert(false && "LPMs are unsupported nexus pointers.\n");
-				// printf("LPMs are unsupported nexus pointers. (name: %s, type: %d)\n", ivl_lpm_basename(lpm), ivl_lpm_type(lpm));
 				if (ivl_lpm_q(lpm) == nex) {
-					propagate_lpm(lpm, aff_sig, nemo_des);
+					propagate_lpm(lpm, aff_sig);
          		}
 			}
 			else if ((swt = ivl_nexus_ptr_switch(nex_ptr))){
 				assert(false && "Switches are unsupported nexus pointers.\n");
-				// printf("Switches are unsupported nexus pointers. (%s)\n", ivl_switch_basename(swt));
 			}
 			else if ((con = ivl_nexus_ptr_con(nex_ptr))){
 				// assert(false && "Constants are unsupported nexus pointers.\n");
@@ -70,11 +69,9 @@ void propagate_sig(ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
 			}
 			else if ((bra = ivl_nexus_ptr_branch(nex_ptr))){
 				assert(false && "Branches are unsupported nexus pointers.\n");
-				// printf("Branches are unsupported nexus pointers. (Faulting Signal: %s)\n", nemo_des.get_sig_name(aff_sig).c_str());
 			}
 			else{
 				assert(false && "? are unsupported nexus pointers.\n");	
-				// printf("? are unsupported nexus pointers. (Faulting Signal: %s)\n", nemo_des.get_sig_name(aff_sig).c_str());
 			}
 		}
 	}

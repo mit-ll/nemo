@@ -1,10 +1,10 @@
 #include <cassert>
 
 #include <ivl_target.h>
-#include "ttb.h"
+#include "nemo_design.h"
 
 // Logic devices are easy!
-void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Nemo_Design& nemo_des) {
+void Nemo_Design::propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig) {
 	unsigned int    npins = ivl_logic_pins(logic);
 	ivl_nexus_t     input_pin_nex;
 	ivl_nexus_ptr_t nex_ptr;
@@ -27,7 +27,7 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Nemo_Desig
 			}
 			sig = ivl_nexus_ptr_sig(ivl_nexus_ptr(input_pin_nex, 0));
 			if (sig) {
-				nemo_des.add_connection(aff_sig, sig);
+				add_connection(aff_sig, sig);
 			}
 		}
 	}
