@@ -2,7 +2,7 @@
 #include "nemo_signal.h"
 
 Nemo_Signal::Nemo_Signal(){
-	sig = NULL;
+	sig = new Nemo_Signal_PB();
 }
 
 Nemo_Signal::Nemo_Signal(ivl_signal_t s, unsigned int s_id){

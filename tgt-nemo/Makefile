@@ -7,30 +7,32 @@ INSTALL_DATA = ${INSTALL} -m 644
 
 IDIR=../iverilog
 CC=g++
-CFLAGS=-I$(IDIR) -fpic -shared
+CFLAGS=-I$(IDIR) -fpic
 # -Wall -Wextra -Wshadow -g -O2
 LIBS=-lprotobuf
 
 TGT=nemo
-# DOT=up_counter.dot
-DOT=orpsoc_top.express50MHz.nl.dot
-# NETLIST=../up_counter.v
-NETLIST=../orpsoc_top.express50MHz.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
+# TOP_MODULE=up_counter
+TOP_MODULE=orpsoc_top
+# DOT=up_counter
+DOT=orpsoc_top.express_100MHz
+# NETLIST=../up_counter.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
+NETLIST=../orpsoc_top.express_100MHz.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 PROTO=$(wildcard protobufs/*.proto)
 # DEPS=ttb.h ttb_signal.h ttb_dot_file.h ivl_target.h
 
-all: proto $(TGT) confs install
+all: $(TGT) confs install
 
-proto:
-	protoc -I=protobufs/ --cpp_out=. $(PROTO)
+# proto:
+# 	protoc -I=protobufs/ --cpp_out=. $(PROTO)
 
 $(TGT): $(OBJS)
 	$(CC) -undefined suppress -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
  
 %.o: %.cc
-	$(CC) $(CFLAGS) $(LIBS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 confs: ./generate_tgt_confs
 	./generate_tgt_confs $(TGT)
@@ -48,20 +50,19 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -v -t nemo -o $(DOT) $(NETLIST)
+	../iverilog/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST)
 
 runsave:
-	../iverilog/bin/iverilog -v -t nemo -o $(DOT) $(NETLIST) > test4.txt
+	../iverilog/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST) > test.txt
 
 clean:
 	rm -f *.o
 	rm -f *.tgt
 	rm -f *.conf
-	rm -f $(DOT).dot
 
 cleanproto:
 	rm -f *.pb.cc
 	rm -f *.pb.h
-	rm -f *.pb.bin
+	rm -f *.pb
 
 cleanall: clean cleanproto uninstall

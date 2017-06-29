@@ -39,7 +39,8 @@ int target_design(ivl_design_t des) {
 
 	// Get root scopes of design
 	ivl_design_roots(des, &roots, &num_roots);
-	nemo_des = new Nemo_Design(roots, num_roots);
+	printf("\nNumber of Root Scopes: %d\n", num_roots);
+	nemo_des = new Nemo_Design(roots, num_roots, ivl_design_flag(des, "-o"));
 	
 	//------------------------------------------------------------------------
 	// Find all the signals in the design
@@ -49,6 +50,7 @@ int target_design(ivl_design_t des) {
 	if (!nemo_des->were_signals_loaded_from_pb()){
 		nemo_des->serialize_nemo_signal_pbs();	
 		nemo_des->delete_nemo_sigs();
+		nemo_des->delete_spliced_nemo_sigs();
 	}
 
 	//------------------------------------------------------------------------
@@ -58,7 +60,7 @@ int target_design(ivl_design_t des) {
 	// Save Connection Protobufs
 	if (!nemo_des->were_connections_loaded_from_pb()){
 		nemo_des->serialize_nemo_connection_pbs();
-		nemo_des->serialize_spliced_nemo_signal_pbs();
+		// nemo_des->serialize_spliced_nemo_signal_pbs();
 	}
 
 	//------------------------------------------------------------------------

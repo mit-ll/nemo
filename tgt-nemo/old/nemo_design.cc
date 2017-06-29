@@ -8,17 +8,20 @@
 
 Nemo_Design::Nemo_Design(): root_scopes(NULL), num_root_scopes(0), num_sigs(0), num_spliced_sigs(0), 
 	num_conns(0), signals_loaded_from_pb(false), connections_loaded_from_pb(false){
-		nemo_sigs         = NULL;
-		spliced_nemo_sigs = NULL;
-		connections       = NULL;	
+		nemo_sigs         = new vector<Nemo_Signal*>();
+		spliced_nemo_sigs = new vector<Nemo_Signal*>();
+		connections       = new vector<Nemo_Connection*>();	
 	}
 
-Nemo_Design::Nemo_Design(ivl_scope_t* rs, unsigned int num_rs)
+Nemo_Design::Nemo_Design(ivl_scope_t* rs, unsigned int num_rs, const char* pb_f_bn)
 	: root_scopes(rs), num_root_scopes(num_rs), num_sigs(0), num_spliced_sigs(0),
 	num_conns(0), signals_loaded_from_pb(false), connections_loaded_from_pb(false){
-		nemo_sigs         = NULL;
-		spliced_nemo_sigs = NULL;
-		connections       = NULL;
+		nemo_sigs            = new vector<Nemo_Signal*>();
+		spliced_nemo_sigs    = new vector<Nemo_Signal*>();
+		connections          = new vector<Nemo_Connection*>();
+		sigs_pb_file         = string(string(pb_f_bn) + string(SIGS_PB_FILE));
+		spliced_sigs_pb_file = string(string(pb_f_bn) + string(SPLICED_SIGS_PB_FILE));
+		cons_pb_file         = string(string(pb_f_bn) + string(CONS_PB_FILE));
 }
 
 Nemo_Design::~Nemo_Design(){
@@ -34,22 +37,22 @@ bool Nemo_Design::fexists(const char* filename){
 }
 
 void Nemo_Design::serialize_nemo_signal_pbs(){
-	int fd = open(SIGS_PB_FILE, O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
+	int fd = open(sigs_pb_file.c_str(), O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
 	ZeroCopyOutputStream* raw_output   = new FileOutputStream(fd);
 	CodedOutputStream* 	  coded_output = new CodedOutputStream(raw_output);
 	
-	printf("Writing signal protobufs to %s ...\n", SIGS_PB_FILE);
+	printf("Writing signal protobufs to file (%s)...\n", sigs_pb_file.c_str());
 	// Write Number of Signals to PB File
 	coded_output->WriteLittleEndian32(num_sigs);
 
 	// Write Signal Objects to PB File
 	for(unsigned int i = 0; i < nemo_sigs->size(); i++){
 		if (!(*nemo_sigs)[i]->write_pb_to_file(coded_output)){
-			fprintf(stderr, "ERROR: failed to write to protobuf file %s.\n", SIGS_PB_FILE);
+			fprintf(stderr, "ERROR: failed to write to protobuf file %s.\n", sigs_pb_file.c_str());
 		 	exit(-4);
 		}
 	}
-	printf("Done writing protobuf to file.\n\n");
+	printf("Done.\n\n");
 	
 	delete coded_output;
 	delete raw_output;
@@ -57,22 +60,22 @@ void Nemo_Design::serialize_nemo_signal_pbs(){
 }
 
 void Nemo_Design::serialize_spliced_nemo_signal_pbs(){
-	int fd = open(SPLICED_SIGS_PB_FILE, O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
+	int fd = open(spliced_sigs_pb_file.c_str(), O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
 	ZeroCopyOutputStream* raw_output   = new FileOutputStream(fd);
 	CodedOutputStream* 	  coded_output = new CodedOutputStream(raw_output);
 	
-	printf("Writing spliced signal protobufs to %s ...\n", SPLICED_SIGS_PB_FILE);
+	printf("Writing spliced signal protobufs to file (%s)...\n", spliced_sigs_pb_file.c_str());
 	// Write Number of Signals to PB File
 	coded_output->WriteLittleEndian32(num_spliced_sigs);
 
 	// Write Signal Objects to PB File
 	for(unsigned int i = 0; i < spliced_nemo_sigs->size(); i++){
 		if (!(*spliced_nemo_sigs)[i]->write_pb_to_file(coded_output)){
-			fprintf(stderr, "ERROR: failed to write to protobuf file %s.\n", SPLICED_SIGS_PB_FILE);
+			fprintf(stderr, "ERROR: failed to write to protobuf file %s.\n", spliced_sigs_pb_file.c_str());
 		 	exit(-4);
 		}
 	}
-	printf("Done writing protobuf to file.\n\n");
+	printf("Done.\n\n");
 	
 	delete coded_output;
 	delete raw_output;
@@ -80,22 +83,22 @@ void Nemo_Design::serialize_spliced_nemo_signal_pbs(){
 }
 
 void Nemo_Design::serialize_nemo_connection_pbs(){
-	int fd = open(CONS_PB_FILE, O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
+	int fd = open(cons_pb_file.c_str(), O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO);
 	ZeroCopyOutputStream* raw_output   = new FileOutputStream(fd);
 	CodedOutputStream* 	  coded_output = new CodedOutputStream(raw_output);
 	
-	printf("Writing signal protobufs to %s ...\n", CONS_PB_FILE);
-	// Write Number of Signals to PB File
+	printf("Writing connection protobufs to files (%s)...\n", cons_pb_file.c_str());
+	// Write Number of Connections to PB File
 	coded_output->WriteLittleEndian32(num_conns);
 
-	// Write Signal Objects to PB File
+	// Write Connection Objects to PB File
 	for(unsigned int i = 0; i < connections->size(); i++){
 		if (!(*connections)[i]->write_pb_to_file(coded_output)){
-			fprintf(stderr, "ERROR: failed to write to protobuf file %s.\n", CONS_PB_FILE);
+			fprintf(stderr, "ERROR: failed to write to protobuf file %s.\n", cons_pb_file.c_str());
 		 	exit(-4);
 		}
 	}
-	printf("Done writing protobuf to file.\n\n");
+	printf("Done.\n\n");
 	
 	delete coded_output;
 	delete raw_output;
@@ -110,6 +113,7 @@ void Nemo_Design::delete_nemo_sigs(){
 			}
 		}
 		delete nemo_sigs;
+		nemo_sigs = NULL;
 	}
 }
 
@@ -121,6 +125,7 @@ void Nemo_Design::delete_spliced_nemo_sigs(){
 			}
 		}
 		delete spliced_nemo_sigs;
+		spliced_nemo_sigs = NULL;
 	}
 }
 
@@ -132,6 +137,7 @@ void Nemo_Design::delete_connections(){
 			}
 		}
 		delete connections;
+		connections = NULL;
 	}
 }
 
@@ -152,6 +158,10 @@ Nemo_Signal* Nemo_Design::get_nemo_sig(unsigned int sig_id){
 		return (*nemo_sigs)[sig_id];	
 	}
 	return NULL;
+}
+
+Nemo_Signal* Nemo_Design::get_nemo_sig(ivl_signal_t ivl_sig){
+	return get_nemo_sig(get_id(ivl_sig));
 }
 
 vector<Nemo_Signal*>* Nemo_Design::get_nemo_sigs(){
@@ -201,7 +211,7 @@ void Nemo_Design::add_connection(ivl_signal_t aff_sig, ivl_signal_t sig){
 // 	if (nemo_sigs != NULL){
 // 		(*nemo_sigs)[aff_sig_id]->add_connection(sig_id);
 // 	}
-// 	fprintf(stderr, "ERROR: cannot add connection to NULL nemo signals.\n");
+// 	fprintf(stderr, "ERROR: cannot add connection to NULL nemo signal.\n");
 // }
 
 Nemo_Signal* Nemo_Design::add_spliced_signal(ivl_signal_t new_sig){
@@ -218,32 +228,48 @@ void Nemo_Design::debug_print_all_nemo_sigs(){
 	}
 }
 
-void Nemo_Design::load_design_signals(){
-	nemo_sigs = new vector<Nemo_Signal*>();
-
-	// Load all signals in the design
-	if (!fexists(SIGS_PB_FILE)){
-		// Protobuf file does not exist: find all signals in the iverilog design
-		printf("Cannot find signals protobuf file (%s), parsing IVL structure instead ...\n", SIGS_PB_FILE);
-		for (unsigned int i = 0; i < num_root_scopes; i++) {
-			load_signals_from_ivl(root_scopes[i]);
-		}
-		printf("Done parsing IVL signals.\n\n");
-	} else{
-		// Load signals from protobuf file
-		printf("Found signal protobufs file (%s)!\n", SIGS_PB_FILE);
-		load_signals_from_pb();
-	}
-
-	// Load all spliced signals in the design
-	if (fexists(SPLICED_SIGS_PB_FILE)){
-		printf("Found signal protobufs file (%s)!\n", SPLICED_SIGS_PB_FILE);
-		load_spliced_signals_from_pb();
+void Nemo_Design::debug_print_all_nemo_sig_names(){
+	Nemo_Signal* tmp_sig = NULL;
+	for (vector<ivl_signal_t>::iterator it = ivl_sigs.begin(); it != ivl_sigs.end(); it++){
+		tmp_sig = get_nemo_sig(*it);
+		printf("%s\n", tmp_sig->full_name().c_str());
 	}
 }
 
-void Nemo_Design::load_signals_from_pb(){
-	int fd = open(SIGS_PB_FILE, O_RDONLY);
+void Nemo_Design::debug_print_all_ivl_sig_names(){
+	for (vector<ivl_signal_t>::iterator it = ivl_sigs.begin(); it != ivl_sigs.end(); it++){
+		ivl_scope_t curr_scope = ivl_signal_scope(*it);
+		string      tmp_name   = string(ivl_scope_name(curr_scope)) + string(".") + string(ivl_signal_basename(*it));
+		printf("%s\n", tmp_name.c_str());
+	}
+}
+
+void Nemo_Design::load_design_signals(){
+	// Load all signals in the design
+	if (!fexists(sigs_pb_file.c_str())){
+		// Protobuf file does not exist: find all signals in the iverilog design
+		printf("Cannot find signals protobuf file (%s), parsing IVL structure instead ...\n", sigs_pb_file.c_str());
+		for (unsigned int i = 0; i < num_root_scopes; i++) {
+			parse_signals_from_ivl(root_scopes[i]);
+		}
+		printf("Done.\n\n");
+	} else{
+		// Load signals from protobuf file
+		printf("Found signal protobufs file: %s\n", sigs_pb_file.c_str());
+		parse_signals_from_pb(sigs_pb_file.c_str());
+	}
+
+	// Load all spliced signals in the design
+	if (fexists(spliced_sigs_pb_file.c_str())){
+		printf("Found spliced signal protobufs file: %s\n", spliced_sigs_pb_file.c_str());
+		parse_spliced_signals_from_pb(spliced_sigs_pb_file.c_str());
+	} else{
+		printf("Cannot find spliced signals protobuf file: %s\n", spliced_sigs_pb_file.c_str());
+	}
+}
+
+void Nemo_Design::parse_signals_from_pb(const char* fn){
+	int fd = open(fn, O_RDONLY);
 	ZeroCopyInputStream* raw_input   = new FileInputStream(fd);
 	CodedInputStream*    coded_input = new CodedInputStream(raw_input);
 	
@@ -256,7 +282,7 @@ void Nemo_Design::load_signals_from_pb(){
 	}
 
 	// Read signal objects from PB file
-	printf("Loading signal protobufs from %s ...\n", SIGS_PB_FILE);
+	printf("Loading signal protobufs...\n");
 	for(unsigned int i=0; i<num_sigs; i++){
 		nemo_sigs->push_back(new Nemo_Signal());
 		if (DEBUG_PRINTS){
@@ -264,7 +290,7 @@ void Nemo_Design::load_signals_from_pb(){
 			nemo_sigs->back()->debug_print_nemo_sig();
 		}
 		if (!nemo_sigs->back()->read_pb_from_file(coded_input)){
-			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", SIGS_PB_FILE);
+			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", fn);
 		 	exit(-4);
 		}
 		if (DEBUG_PRINTS){
@@ -272,15 +298,15 @@ void Nemo_Design::load_signals_from_pb(){
 			nemo_sigs->back()->debug_print_nemo_sig();
 		}
 	}
-	printf("Done loading signal protobufs.\n\n");
+	printf("Done.\n\n");
 
 	delete coded_input;
 	delete raw_input;
 	close(fd);
 }
 
-void Nemo_Design::load_spliced_signals_from_pb(){
-	int fd = open(SIGS_PB_FILE, O_RDONLY);
+void Nemo_Design::parse_spliced_signals_from_pb(const char* fn){
+	int fd = open(fn, O_RDONLY);
 	ZeroCopyInputStream* raw_input   = new FileInputStream(fd);
 	CodedInputStream*    coded_input = new CodedInputStream(raw_input);
 	
@@ -291,7 +317,7 @@ void Nemo_Design::load_spliced_signals_from_pb(){
 	}
 
 	// Read signal objects from PB file
-	printf("Loading spliced signal protobufs from %s ...\n", SPLICED_SIGS_PB_FILE);
+	printf("Loading spliced signal protobufs...\n");
 	for(unsigned int i=0; i<num_spliced_sigs; i++){
 		spliced_nemo_sigs->push_back(new Nemo_Signal());
 		if (DEBUG_PRINTS){
@@ -299,7 +325,7 @@ void Nemo_Design::load_spliced_signals_from_pb(){
 			spliced_nemo_sigs->back()->debug_print_nemo_sig();
 		}
 		if (!spliced_nemo_sigs->back()->read_pb_from_file(coded_input)){
-			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", SPLICED_SIGS_PB_FILE);
+			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", fn);
 		 	exit(-4);
 		}
 		if (DEBUG_PRINTS){
@@ -307,16 +333,16 @@ void Nemo_Design::load_spliced_signals_from_pb(){
 			spliced_nemo_sigs->back()->debug_print_nemo_sig();
 		}
 	}
-	printf("Done loading signal protobufs.\n\n");
+	printf("Done.\n\n");
 
 	delete coded_input;
 	delete raw_input;
 	close(fd);
 }
 
-void Nemo_Design::load_signals_from_ivl(ivl_scope_t scope){
-	//@TODO: Look more into dealing with scopes that are tasks or functions
-	if (ivl_scope_type(scope) != IVL_SCT_MODULE && ivl_scope_type(scope) != IVL_SCT_BEGIN && ivl_scope_type(scope) != IVL_SCT_TASK ) {
+void Nemo_Design::parse_signals_from_ivl(ivl_scope_t scope){
+	//@TODO: Look more into dealing with scopes that are not modules
+	if (ivl_scope_type(scope) != IVL_SCT_MODULE) {
 		fprintf(stderr, "ERROR: cannot parse scope type (%d)\n", ivl_scope_type(scope));
 		fprintf(stderr, "File: %s Line: %d\n", ivl_scope_file(scope), ivl_scope_lineno(scope));
 		return;
@@ -324,7 +350,7 @@ void Nemo_Design::load_signals_from_ivl(ivl_scope_t scope){
 
 	// Rescurse into any submodules
 	for (unsigned int i = 0; i < ivl_scope_childs(scope); i++) {
-		load_signals_from_ivl(ivl_scope_child(scope, i));
+		parse_signals_from_ivl(ivl_scope_child(scope, i));
 	}
 
 	// Enumerate all signals in each scope
@@ -339,23 +365,20 @@ void Nemo_Design::load_signals_from_ivl(ivl_scope_t scope){
 }
 
 void Nemo_Design::load_design_connections(){
-	connections       = new vector<Nemo_Connection*>();
-	spliced_nemo_sigs = new vector<Nemo_Signal*>();
-
-	if (!fexists(CONS_PB_FILE)){
+	if (!fexists(cons_pb_file.c_str())){
 		// Protobuf file does not exist: find all connections in the iverilog design
-		printf("Cannot find connections protobuf file (%s), parsing IVL structure instead ...\n", CONS_PB_FILE);
-		load_connections_from_ivl();
-		printf("Done parsing IVL connections.\n\n");
+		printf("Cannot find connections protobuf file (%s), parsing IVL structure instead ...\n", cons_pb_file.c_str());
+		parse_connections_from_ivl();
+		printf("Done.\n\n");
 	} else{
 		// Load connections from protobuf file
-		printf("Found connection protobufs file (%s)!\n", CONS_PB_FILE);
-		load_connections_from_pb();
+		printf("Found connection protobufs file: %s\n", cons_pb_file.c_str());
+		parse_connections_from_pb(cons_pb_file.c_str());
 	}
 }
 
-void Nemo_Design::load_connections_from_pb(){
-	int fd = open(CONS_PB_FILE, O_RDONLY);
+void Nemo_Design::parse_connections_from_pb(const char* fn){
+	int fd = open(fn, O_RDONLY);
 	ZeroCopyInputStream* raw_input   = new FileInputStream(fd);
 	CodedInputStream*    coded_input = new CodedInputStream(raw_input);
 	
@@ -368,22 +391,22 @@ void Nemo_Design::load_connections_from_pb(){
 	}
 
 	// Read connection objects from PB file
-	printf("Loading connection protobufs from %s ...\n", CONS_PB_FILE);
+	printf("Loading connection protobufs...\n");
 	for(unsigned int i=0; i<num_conns; i++){
 		connections->push_back(new Nemo_Connection());
 		if (!connections->back()->read_pb_from_file(coded_input)){
-			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", CONS_PB_FILE);
+			fprintf(stderr, "ERROR: failed to parse protobuf file %s.\n", fn);
 		 	exit(-4);
 		}
 	}
-	printf("Done loading connection protobufs.\n\n");
+	printf("Done.\n\n");
 
 	delete coded_input;
 	delete raw_input;
 	close(fd);
 }
 
-void Nemo_Design::load_connections_from_ivl(){
+void Nemo_Design::parse_connections_from_ivl(){
 	for (vector<ivl_signal_t>::iterator it = ivl_sigs.begin(); it != ivl_sigs.end(); ++it){
 		//@TODO: Support more than 1 dimension vector
 		//       Though it looks like it should be ok for OR1200

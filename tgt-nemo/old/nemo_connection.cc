@@ -1,7 +1,7 @@
 #include "nemo_connection.h"
 
 Nemo_Connection::Nemo_Connection(){
-	connection = NULL;
+	connection = new Nemo_Connection_PB();
 }
 
 Nemo_Connection::Nemo_Connection(unsigned int s1, unsigned int s2){
