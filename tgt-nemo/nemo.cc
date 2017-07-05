@@ -112,7 +112,7 @@ int target_design(ivl_design_t des) {
 	df.save_graph();
 	// Stop timer
 	duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-	printf("Execution Time: %f (s)\n\n", duration);
+	printf("\nExecution Time: %f (s)\n\n", duration);
 
 	return 0;
 }

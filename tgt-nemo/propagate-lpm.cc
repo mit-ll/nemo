@@ -39,35 +39,28 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 	switch (lpm_type) {
 		/* part select: vector to part (part select in rval) */
 		case IVL_LPM_PART_VP:
+			if (DEBUG_PRINTS){ printf("		LPM (%s) is of type (%d) IVL_LPM_PART_PV\n", ivl_lpm_basename(lpm), lpm_type); }
 			//@TODO: Support non-constant base (and figure out what that means)...
 			if (ivl_lpm_data(lpm, 1)) {
 				fprintf(stderr, "ERROR: LPM_PART_VP/PV with non constant base not supported\n");
 				fprintf(stderr, "File: %s Line: %d\n", ivl_lpm_file(lpm), ivl_lpm_lineno(lpm));
 				break;
 			}
-			if (DEBUG_PRINTS){ printf("		LPM (%s) is of type (%d) IVL_LPM_PART_PV\n", ivl_lpm_basename(lpm), lpm_type); }
-			input_pin_nexus = ivl_lpm_data(lpm, 0); // extract input (0) pin nexus
-			// Iterate over all nexus pointers for LPM input pin nexus
+			
+			// extract input pin (pin-0) nexus for LPM device
+			input_pin_nexus = ivl_lpm_data(lpm, 0);
+
+			// Iterate over all nexus pointers for LPM input pin 
+			// nexus to find the input signal
 			if (DEBUG_PRINTS){ printf("			num nexus pointers at input = %d\n", ivl_nexus_ptrs(input_pin_nexus)); }
 			for (unsigned int i = 0; i < ivl_nexus_ptrs(input_pin_nexus); i += 1){	
 				nexus_ptr = ivl_nexus_ptr(input_pin_nexus, i);
-				if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr))){
-					// Nexus pointer points to a logic device
-					// if (DEBUG_PRINTS){ printf("				input %d is a LOGIC device.\n", i); }
-					// propagate_log(prev_logic, aff_sig, df);
-				} else if ((prev_lpm = ivl_nexus_ptr_lpm(nexus_ptr))){
-					// if (prev_lpm != lpm){
-						// Nexus pointer points to a DIFFERENT lpm device
-						// if (DEBUG_PRINTS){ printf("				input %d is a LPM device.\n", i); }
-						// propagate_lpm(prev_lpm, aff_sig, df);
-					// }
-				} else if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
-					// Nexus pointer points to a signal
+				// IVL creates local (compiler generated) signals as the output of 
+				// every LPM device and constant. Therefore it is only necessary to look 
+				// for signal devices as inputs to the LPM, not any other devices
+				if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
 					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 					df.add_connection(aff_sig, sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm));
-				}
-				else {
-					assert(false && "ERROR: unsupported nexus pointer type input to LPM.\n");
 				}
 			}
 
@@ -81,32 +74,25 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 				break;
 			}
 			if (DEBUG_PRINTS){ printf("		LPM (%s) is of type (%d) IVL_LPM_PART_PV\n", ivl_lpm_basename(lpm), lpm_type); }
-			input_pin_nexus = ivl_lpm_data(lpm, 0); // extract input (0) pin nexus
+			
+			// extract input pin (pin-0) nexus for LPM device
+			input_pin_nexus = ivl_lpm_data(lpm, 0); 
 
-			// Iterate over all nexus pointers for LPM input pin nexus
+			// Iterate over all nexus pointers for LPM input pin 
+			// nexus to find the input signal
 			if (DEBUG_PRINTS){ printf("			num nexus pointers at input = %d\n", ivl_nexus_ptrs(input_pin_nexus)); }
 			for (unsigned int i = 0; i < ivl_nexus_ptrs(input_pin_nexus); i += 1){	
 				nexus_ptr = ivl_nexus_ptr(input_pin_nexus, i);
-				if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr))){
-					// Nexus pointer points to a logic device
-					// if (DEBUG_PRINTS){ printf("				input %d is a LOGIC device.\n", i); }
-					// propagate_log(prev_logic, aff_sig, df);
-				} else if ((prev_lpm = ivl_nexus_ptr_lpm(nexus_ptr))){
-					// if (prev_lpm != lpm){
-						// Nexus pointer points to a DIFFERENT lpm device
-						// if (DEBUG_PRINTS){ printf("				input %d is a LPM device.\n", i); }
-						// propagate_lpm(prev_lpm, aff_sig, df);
-					// }
-				} else if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
+				// IVL creates local (compiler generated) signals as the output of 
+				// every LPM device and constant. Therefore it is only necessary to look 
+				// for signal devices as inputs to the LPM, not any other devices
+				if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
 					// Nexus pointer points to a signal
 					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 					df.add_connection(aff_sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm), sig);
-				} else {
-					assert(false && "ERROR: unsupported nexus pointer type input to LPM.\n");
 				}
 			}
 			break;
-
 		case IVL_LPM_CONCAT:
 		case IVL_LPM_CONCATZ: {
 			if (DEBUG_PRINTS){ 
@@ -121,34 +107,15 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 			for (unsigned int idx = 0; idx < ivl_lpm_size(lpm); idx += 1) {
 				input_pin_nexus = ivl_lpm_data(lpm, idx);
 
-				// Iterate over all nexus pointers for LPM input
-				// Should only be 1 in this case for OR1200
+				// Iterate over all nexus pointers for LPM input pin
+				// nexus to find the input signals
 				if (DEBUG_PRINTS){ printf("			num nexus pointers at input %d = %d\n", idx, ivl_nexus_ptrs(input_pin_nexus)); }
 				for (unsigned int i = 0; i < ivl_nexus_ptrs(input_pin_nexus); i += 1){
 					nexus_ptr = ivl_nexus_ptr(input_pin_nexus, i);
-					if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr))){
-						// Nexus pointer points to a logic device
-						// if (DEBUG_PRINTS){ printf("				input %d is a LOGIC device.\n", i); }
-						// propagate_log(prev_logic, aff_sig, df);
-						continue;
-					} else if ((prev_lpm = ivl_nexus_ptr_lpm(nexus_ptr))){
-						// if (prev_lpm != lpm){
-							// Nexus pointer points to a DIFFERENT lpm device
-							// if (DEBUG_PRINTS){ printf("				input %d is a LPM device.\n", i); }
-							// propagate_lpm(prev_lpm, aff_sig, df);
-						// }
-						continue;
-					} else if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
+					if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
 						// Nexus pointer points to a signal
 						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, msb, lsb, sig);
-					} else if ((con = ivl_nexus_ptr_con(nexus_ptr))){
-						// Nexus pointer points to a constant
-						// if (DEBUG_PRINTS){ printf("				input %d is a CONSTANT device.\n", i); }
-						// df.add_const_node(con);
-						// df.add_const_connection(aff_sig, msb, lsb, con);
-					} else {
-						assert(false && "ERROR: unsupported nexus pointer type input to LPM.\n");
 					}
 				}
 				curr_lsb += get_nexus_width(input_pin_nexus);

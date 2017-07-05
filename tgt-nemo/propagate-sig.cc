@@ -41,27 +41,33 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 		assert(nex_ptr);
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))){
 			// Means that the signals are the same. Usually happens on module hookups
+			// 
 			// Also if two signals in a module are hooked up to the same thing
+			// 
 			// Also if a signal is an input signal (i.e. nothing connects to it)
 
 			// If the signal is different signal --> add connection
 			//@TODO: it is difficult to know what signal is an output vs inputs
 			if (aff_sig != sig){
-				if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
-				df.add_connection(aff_sig, sig);
+				// only propagate a signal to a signal if it is an output port
+				// if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT || ivl_signal_port(aff_sig) == IVL_SIP_INOUT){
+					if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+					df.add_connection(aff_sig, sig);
+				// }
 			}
 		}
-		// else if ((logic = ivl_nexus_ptr_log(nex_ptr))){ 
-		// 	// Pin 0 is the output of every logic device
-		// 	// if aff_sig nexus is different the the logic output nexus
-		// 	// the aff_sig is driving an input of the logic device
-		// 	if (ivl_logic_pin(logic, 0) == nex) {
-		// 		if (DEBUG_PRINTS){ printf("	input %d is a LOGIC device.\n", i); }
-		// 		propagate_log(logic, aff_sig, df);
-		// 	}
-		// }
+		else if ((logic = ivl_nexus_ptr_log(nex_ptr))){ 
+			// Pin-0 is the output of every logic device.
+			// 
+			// Output nexus of the logic device should be the same nexus as the aff_sig
+			// otherwise the aff_sig is driving an input of the LPM
+			if (ivl_logic_pin(logic, 0) == nex) {
+				if (DEBUG_PRINTS){ printf("	input %d is a LOGIC device.\n", i); }
+				propagate_log(logic, aff_sig, df);
+			}
+		}
 		else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))){
-			// Output nexus of LPM should be the nexus of the aff_sig
+			// Output nexus of LPM should be the same nexus of the aff_sig
 			// otherwise the aff_sig is driving an input of the LPM
 			if (ivl_lpm_q(lpm) == nex && ivl_signal_local(aff_sig)) {
 				if (DEBUG_PRINTS){ printf("	input %d is a LPM device (type: %d).\n", i, ivl_lpm_type(lpm)); }
