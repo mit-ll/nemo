@@ -9,7 +9,12 @@ class Dot_File {
 		const char* get_path();
 		void        init_graph();
 		void        add_node(ivl_signal_t sig);
+		void 		add_const_node(ivl_net_const_t con);
 		void        add_connection(ivl_signal_t aff_sig, ivl_signal_t sig);
+		void 		add_connection(ivl_signal_t aff_sig, ivl_signal_t sig, unsigned long sig_msb, unsigned long sig_lsb);
+		void 		add_connection(ivl_signal_t aff_sig, unsigned long aff_sig_msb, unsigned long aff_sig_lsb, ivl_signal_t sig);
+		void 		add_const_connection(ivl_signal_t aff_sig, ivl_net_const_t con);
+		void 		add_const_connection(ivl_signal_t aff_sig, unsigned long aff_sig_msb, unsigned long aff_sig_lsb, ivl_net_const_t con);
 		void        save_graph();
 	private:
 		const char* path;

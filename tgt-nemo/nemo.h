@@ -12,10 +12,12 @@
 
 #include <vector>
 #include <ivl_target.h>
- #include "nemo_dot_file.h"
+#include "nemo_dot_file.h"
 
-// #define CRITICAL_SIG_REGEX "supv"
-#define CRITICAL_SIG_REGEX "[\(\ (to_)]sr\[0\]\|supv"
+#define DEBUG_PRINTS true
+#define ENUMERATE_ENTIRE_CIRCUIT true
+#define CRITICAL_SIG_REGEX "out"
+// #define CRITICAL_SIG_REGEX "[\(\ (to_)]sr\[0\]\|supv"
 
 using namespace std;
 

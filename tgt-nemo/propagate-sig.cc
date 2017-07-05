@@ -31,10 +31,12 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 	}
 	assert(nex && "ERROR: invalid nexus for signal\n");
 	
-	// printf("Signal #: %6d, Name: %20s, ", get_id(aff_sig), get_sig_name(aff_sig).c_str());
-	// printf("num_ptrs: %d\n", ivl_nexus_ptrs(nex));
+	if (DEBUG_PRINTS){
+		printf("Signal %s.%s, ", ivl_scope_name(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig));
+		printf("num_ptrs: %d\n", ivl_nexus_ptrs(nex));
+	}
 	// Iterate through the pointers in a given nexus
-	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i++){
+	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i += 1){
 		nex_ptr = ivl_nexus_ptr(nex, i);
 		assert(nex_ptr);
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))){
@@ -43,34 +45,37 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 			// Also if a signal is an input signal (i.e. nothing connects to it)
 
 			// If the signal is different signal --> add connection
+			//@TODO: it is difficult to know what signal is an output vs inputs
 			if (aff_sig != sig){
-				// printf("	(signal; %d)\n", ivl_nexus_ptr_pin(nex_ptr));
+				if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 				df.add_connection(aff_sig, sig);
 			}
 		}
-		else if ((logic = ivl_nexus_ptr_log(nex_ptr))){ 
-			// printf("	(logic;  %d)\n", ivl_nexus_ptr_pin(nex_ptr));
-			// Pin 0 is the output of every logic device
-			if (ivl_logic_pin(logic, 0) == nex) {
-				propagate_log(logic, aff_sig, df);
-			}
-			// printf("Logic are unsupported nexus pointers. (name: %s, type: %d)\n", ivl_logic_basename(logic), ivl_logic_type(logic));
-			continue;
-		}
+		// else if ((logic = ivl_nexus_ptr_log(nex_ptr))){ 
+		// 	// Pin 0 is the output of every logic device
+		// 	// if aff_sig nexus is different the the logic output nexus
+		// 	// the aff_sig is driving an input of the logic device
+		// 	if (ivl_logic_pin(logic, 0) == nex) {
+		// 		if (DEBUG_PRINTS){ printf("	input %d is a LOGIC device.\n", i); }
+		// 		propagate_log(logic, aff_sig, df);
+		// 	}
+		// }
 		else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))){
-			// printf("	(lpm;    %d)\n", ivl_nexus_ptr_pin(nex_ptr));
-			// assert(false && "LPMs are unsupported nexus pointers.\n");
-			if (ivl_lpm_q(lpm) == nex) {
+			// Output nexus of LPM should be the nexus of the aff_sig
+			// otherwise the aff_sig is driving an input of the LPM
+			if (ivl_lpm_q(lpm) == nex && ivl_signal_local(aff_sig)) {
+				if (DEBUG_PRINTS){ printf("	input %d is a LPM device (type: %d).\n", i, ivl_lpm_type(lpm)); }
 				propagate_lpm(lpm, aff_sig, df);
      		}
-			continue;
+		} else if ((con = ivl_nexus_ptr_con(nex_ptr))){
+			if (ivl_signal_local(aff_sig)){
+				if (DEBUG_PRINTS){ printf("	input %d is a CONSTANT.\n", i); }
+				df.add_const_node(con);
+				df.add_const_connection(aff_sig, con);
+			}
 		}
 		else if ((swt = ivl_nexus_ptr_switch(nex_ptr))){
 			assert(false && "Switches are unsupported nexus pointers.\n");
-		}
-		else if ((con = ivl_nexus_ptr_con(nex_ptr))){
-			// assert(false && "Constants are unsupported nexus pointers.\n");
-			printf("Constants are unsupported nexus pointers. (bits: %s, type: %d)\n", ivl_const_bits(con), ivl_const_type(con));
 		}
 		else if ((bra = ivl_nexus_ptr_branch(nex_ptr))){
 			assert(false && "Branches are unsupported nexus pointers.\n");

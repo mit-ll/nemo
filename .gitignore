@@ -10,3 +10,4 @@ iverilog/*
 *.pb.bin
 *.out
 *.txt
+*.pdf

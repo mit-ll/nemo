@@ -10,6 +10,7 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 	
 	// Device Pointers
 	ivl_signal_t    sig;
+	ivl_net_const_t con;
 	ivl_net_logic_t prev_logic;
 	ivl_lpm_t       prev_lpm;
 
@@ -26,17 +27,23 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 		for (unsigned int i = 0; i < ivl_nexus_ptrs(input_pin_nexus); i++){
 			nexus_ptr = ivl_nexus_ptr(input_pin_nexus, i);
 			if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr))){
-				// Nexus pointer points to a logic device
-				propagate_log(prev_logic, aff_sig, df);
-			}
-			if ((prev_lpm = ivl_nexus_ptr_lpm(nexus_ptr))){
+				if (prev_logic != logic){
+					// Nexus pointer points to a DIFFERENT logic device
+					propagate_log(prev_logic, aff_sig, df);
+				}
+			} else if ((prev_lpm = ivl_nexus_ptr_lpm(nexus_ptr))){
 				// Nexus pointer points to a lpm device
 				propagate_lpm(prev_lpm, aff_sig, df);
-			}
-			if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
+			} else if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
 				// Nexus pointer points to a signal
 				df.add_connection(aff_sig, sig);
-			}
+			} else if ((con = ivl_nexus_ptr_con(nexus_ptr))){
+				// Nexus pointer points to a constant
+				df.add_const_node(con);
+				df.add_const_connection(aff_sig, con);
+			} else {
+				assert(false && "ERROR: unsupported nexus pointer type input to Logic.\n");
+			}	
 		}
 	}
 }

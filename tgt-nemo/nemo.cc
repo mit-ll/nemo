@@ -53,7 +53,7 @@ bool is_critical_sig(ivl_signal_t sig){
 	string signal_base_name = string(ivl_signal_basename(sig));
 	
 	regex_search(signal_base_name, matches, critical_regex);
-	if (matches.size() > 0){
+	if (matches.size() > 0 || ENUMERATE_ENTIRE_CIRCUIT){
 		return true;
 	}
 	return false;
@@ -62,16 +62,16 @@ bool is_critical_sig(ivl_signal_t sig){
 void print_full_signal_name(ivl_signal_t sig){
 	string tmp_scopename = string(ivl_scope_name(ivl_signal_scope(sig))); 
 	string tmp_basename  = string(ivl_signal_basename(sig));
-	string tmp_fullname  = string(tmp_scopename + tmp_basename);
-	printf("%s\n", tmp_fullname.c_str());
+	string tmp_fullname  = string(tmp_scopename + string(".") + tmp_basename);
+	printf("%s - Width: %d\n", tmp_fullname.c_str(), ivl_signal_width(sig));
 }
 
 void debug_print_critical_sigs(vector<ivl_signal_t>& critical_sigs){
 	printf("Number of Critical Signals: %lu\n\n", critical_sigs.size());
-
 	for (unsigned i = 0; i < critical_sigs.size(); i++){
 		print_full_signal_name(critical_sigs[i]);
 	}
+	printf("\n");
 }
 
 // *** "Main"/Entry Point *** of iverilog target
@@ -91,6 +91,7 @@ int target_design(ivl_design_t des) {
 	
 	// Find all critical signals in the design
 	find_critical_sigs(critical_sigs, roots, num_roots);
+	debug_print_critical_sigs(critical_sigs);
 
 	// Write all nodes to the graph dot file
 	df = Dot_File(ivl_design_flag(des, "-o"));
