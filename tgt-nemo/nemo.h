@@ -15,8 +15,9 @@
 #include "nemo_dot_file.h"
 
 #define DEBUG_PRINTS true
-#define ENUMERATE_ENTIRE_CIRCUIT true
-#define CRITICAL_SIG_REGEX "out"
+#define ENUMERATE_ENTIRE_CIRCUIT false
+#define SEARCH_DEPTH 1
+#define CRITICAL_SIG_REGEX "o1"
 // #define CRITICAL_SIG_REGEX "[\(\ (to_)]sr\[0\]\|supv"
 
 using namespace std;
