@@ -33,9 +33,12 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 		for (unsigned j = 0; j < ivl_nexus_ptrs(input_pin_nexus); j++){
 			nexus_ptr = ivl_nexus_ptr(input_pin_nexus, j);
 			if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
-				// Nexus pointer points to a signal
-				if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
-				df.add_connection(aff_sig, sig);
+				// Do not propagate local IVL compiler generated signals
+				// unless they are outputs of constants
+				if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+					df.add_connection(aff_sig, sig);
+				}
 			}
 			else if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr)) != logic){
 				assert(!prev_logic && "Logic unit connected directly to logic unit\n");

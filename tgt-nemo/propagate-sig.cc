@@ -18,23 +18,12 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 	// Nexus Pointers
 	ivl_nexus_t     nex = ivl_signal_nex(aff_sig, 0);
 	ivl_nexus_ptr_t nex_ptr;
-
-	//First get its nexus
-	//@TODO: Deal with larger vectors (more than one nexus)
-	//@TODO: Figure out how more than one nexus works...
-	const int count = ivl_signal_array_count(aff_sig);
-	assert(count >= 0);
-	if (count > 1) {
-		fprintf(stderr, "Error: Skipping Arrayed Signal: %s\n", ivl_signal_basename(aff_sig));
-		fprintf(stderr, "File: %s Line: %d\n", ivl_signal_file(aff_sig), ivl_signal_lineno(aff_sig));
-		return;
-	}
-	assert(nex && "ERROR: invalid nexus for signal\n");
 	
 	if (DEBUG_PRINTS){
 		printf("Signal %s.%s, ", ivl_scope_name(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig));
 		printf("num_ptrs: %d\n", ivl_nexus_ptrs(nex));
 	}
+
 	// Iterate through the pointers in a given nexus
 	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i += 1){
 		nex_ptr = ivl_nexus_ptr(nex, i);
@@ -51,8 +40,12 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 			if (aff_sig != sig){
 				// only propagate a signal to a signal if it is an output port
 				// if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT || ivl_signal_port(aff_sig) == IVL_SIP_INOUT){
-					if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
-					df.add_connection(aff_sig, sig);
+					// Do not propagate local IVL compiler generated signals
+					// unless they are outputs of constants
+					if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+						df.add_connection(aff_sig, sig);
+					}
 				// }
 			}
 		}
@@ -69,16 +62,16 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 		else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))){
 			// Output nexus of LPM should be the same nexus of the aff_sig
 			// otherwise the aff_sig is driving an input of the LPM
-			if (ivl_lpm_q(lpm) == nex && ivl_signal_local(aff_sig)) {
+			if (ivl_lpm_q(lpm) == nex) {
 				if (DEBUG_PRINTS){ printf("	input %d is a LPM device (type: %d).\n", i, ivl_lpm_type(lpm)); }
 				propagate_lpm(lpm, aff_sig, df);
      		}
 		} else if ((con = ivl_nexus_ptr_con(nex_ptr))){
-			if (ivl_signal_local(aff_sig)){
-				if (DEBUG_PRINTS){ printf("	input %d is a CONSTANT.\n", i); }
-				df.add_const_node(con);
-				df.add_const_connection(aff_sig, con);
-			}
+			// In order for the signal to be connected to a constant,
+			// the signal must be a local (compiler generated) signal
+			if (DEBUG_PRINTS){ printf("	input %d is a CONSTANT.\n", i); }
+			df.add_const_node(con);
+			df.add_const_connection(aff_sig, con);
 		}
 		else if ((swt = ivl_nexus_ptr_switch(nex_ptr))){
 			assert(false && "Switches are unsupported nexus pointers.\n");

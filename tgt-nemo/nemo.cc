@@ -35,14 +35,17 @@ void find_sigs(ivl_scope_t scope, vector<ivl_signal_t>& critical_sigs){
 	ivl_signal_t current_ivl_signal;
 	for (unsigned idx = 0; idx < num_scope_sigs; idx++) {
 		current_ivl_signal = ivl_scope_sig(scope, idx);
-		// Check if signal is critical
-		if (is_critical_sig(current_ivl_signal)){
-			// Check if signal is arrayed
-			if (ivl_signal_packed_dimensions(current_ivl_signal) > 1) {
-				print_full_signal_name(current_ivl_signal);
-				assert(false && "ERROR: Unsupported number of dimensions");
+		// Only deal with non local signals, or non-local const signals
+		if (!ivl_signal_local(current_ivl_signal) || is_non_const_local_sig(current_ivl_signal)){
+			// Check if signal is critical
+			if (is_critical_sig(current_ivl_signal)){
+				// Check if signal is arrayed
+				if (ivl_signal_packed_dimensions(current_ivl_signal) > 1) {
+					print_full_signal_name(current_ivl_signal);
+					assert(false && "ERROR: Unsupported number of dimensions");
+				}
+				critical_sigs.push_back(current_ivl_signal);
 			}
-			critical_sigs.push_back(current_ivl_signal);
 		}
 	}
 }
@@ -56,6 +59,38 @@ bool is_critical_sig(ivl_signal_t sig){
 	if (matches.size() > 0 || ENUMERATE_ENTIRE_CIRCUIT){
 		return true;
 	}
+	return false;
+}
+
+bool is_non_const_local_sig(ivl_signal_t sig){
+	ivl_nexus_t 	nexus     = ivl_signal_nex(sig, 0);
+	ivl_nexus_ptr_t nexus_ptr = NULL;
+	ivl_net_const_t con       = NULL;
+
+	//@TODO: Deal with larger vectors (more than one nexus)
+	//@TODO: Figure out how more than one nexus works...
+	const int count = ivl_signal_array_count(sig);
+	assert(count >= 0 && "ERROR: invalid nexus count\n");
+	if (count > 1){
+		fprintf(stderr, "ERROR: cannot process arrayed signal: %s\n", ivl_signal_basename(sig));
+		fprintf(stderr, "File: %s Line: %d\n", ivl_signal_file(sig), ivl_signal_lineno(sig));
+		exit(-1);
+	}
+	assert(nexus && "ERROR: invalid nexus for signal\n");
+
+	// If the signal is not a local signal, return false
+	if (!ivl_signal_local(sig)){
+		return false;
+	}
+
+	// Check if local signal is connected to a constant
+	for(unsigned i = 0; i < ivl_nexus_ptrs(nexus); i++){
+		nexus_ptr = ivl_nexus_ptr(nexus, i);
+		if ((con = ivl_nexus_ptr_con(nexus_ptr))){
+			return true;
+		}
+	}
+
 	return false;
 }
 

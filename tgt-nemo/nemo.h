@@ -24,6 +24,7 @@ using namespace std;
 void find_critical_sigs(vector<ivl_signal_t>& critical_sigs, ivl_scope_t* root_scopes, unsigned num_root_scopes);
 void find_sigs(ivl_scope_t scope, vector<ivl_signal_t>& critical_sigs);
 bool is_critical_sig(ivl_signal_t sig);
+bool is_non_const_local_sig(ivl_signal_t sig);
 void print_full_signal_name(ivl_signal_t sig);
 
 void debug_print_critical_sigs(vector<ivl_signal_t>& critical_sigs);

@@ -77,10 +77,10 @@ void Dot_File::add_node(ivl_signal_t sig){
 		fprintf(file_ptr, "\t\"%s\" [shape=diamond, label=\"%s[%lu:%lu]\"]; /* InOut */\n", 
 			fullname.c_str(), fullname.c_str(), get_msb(sig), get_lsb(sig));
 	}  else if (IVL_SIP_OUTPUT == ivl_signal_port(sig)) {
-		fprintf(file_ptr, "\t\"%s\" [shape=invtrapezium, label=\"%s[%lu:%lu]\"]; /* Output */\n", 
+		fprintf(file_ptr, "\t\"%s\" [shape=trapezium, label=\"%s[%lu:%lu]\"]; /* Output */\n", 
 			fullname.c_str(), fullname.c_str(), get_msb(sig), get_lsb(sig));
     } else if (IVL_SIP_INPUT == ivl_signal_port(sig)) {
-		fprintf(file_ptr, "\t\"%s\" [shape=trapezium, label=\"%s[%lu:%lu]\"]; /* Input */\n", 
+		fprintf(file_ptr, "\t\"%s\" [shape=invtrapezium, label=\"%s[%lu:%lu]\"]; /* Input */\n", 
 			fullname.c_str(), fullname.c_str(), get_msb(sig), get_lsb(sig));
     } else {
 		fprintf(file_ptr, "\t\"%s\" [shape=ellipse, label=\"%s[%lu:%lu]\"];\n", 
