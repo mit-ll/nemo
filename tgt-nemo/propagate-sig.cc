@@ -43,7 +43,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 					// Do not propagate local IVL compiler generated signals
 					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
-						df.add_connection(aff_sig, sig);
+						df.add_connection(aff_sig, sig);	
 					}
 				// }
 			}
@@ -66,11 +66,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 				propagate_lpm(lpm, aff_sig, df);
      		}
 		} else if ((con = ivl_nexus_ptr_con(nex_ptr))){
-			// In order for the signal to be connected to a constant,
-			// the signal must be a local (compiler generated) signal
-			if (DEBUG_PRINTS){ printf("	input %d is a CONSTANT.\n", i); }
-			df.add_const_node(con);
-			df.add_const_connection(aff_sig, con);
+			continue;
 		}
 		else if ((swt = ivl_nexus_ptr_switch(nex_ptr))){
 			assert(false && "Switches are unsupported nexus pointers.\n");

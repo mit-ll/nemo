@@ -15,7 +15,7 @@
 #include "nemo_dot_file.h"
 
 #define DEBUG_PRINTS 			 true
-#define INCLUDE_LOCAL_SIGNALS 	 false
+#define INCLUDE_LOCAL_SIGNALS 	 true
 #define ENUMERATE_ENTIRE_CIRCUIT true
 // #define VISITED_ATTR_STRING "v"
 #define SEARCH_DEPTH 1
@@ -25,15 +25,15 @@
 using namespace std;
 
 typedef struct nemo_signal_t {
-	ivl_signal_t      ivl_sig;
-	bool	 	      visited;
+	ivl_signal_t ivl_sig;  // pointer to IVL signal object
+	bool 		 visited; 
 } nemo_signal_t;
 
 void find_critical_sigs(vector<nemo_signal_t>& critical_sigs, ivl_scope_t* root_scopes, unsigned num_root_scopes);
 void find_critical_scope_sigs(ivl_scope_t scope, vector<nemo_signal_t>& critical_sigs);
 bool is_critical_sig(ivl_signal_t sig);
 bool is_ivl_generated_signal(ivl_signal_t sig);
-bool is_const_local_sig(ivl_signal_t sig);
+ivl_net_const_t is_const_local_sig(ivl_signal_t sig);
 // void color_signal_visited(ivl_signal_t sig);
 // void clean_up_signal_attrs(vector<ivl_signal_t>& critical_sigs);
 void print_signal_attrs(ivl_signal_t sig);

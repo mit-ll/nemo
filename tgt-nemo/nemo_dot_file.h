@@ -13,8 +13,6 @@ class Dot_File {
 		void        add_connection(ivl_signal_t aff_sig, ivl_signal_t sig);
 		void 		add_connection(ivl_signal_t aff_sig, ivl_signal_t sig, unsigned long sig_msb, unsigned long sig_lsb);
 		void 		add_connection(ivl_signal_t aff_sig, unsigned long aff_sig_msb, unsigned long aff_sig_lsb, ivl_signal_t sig);
-		void 		add_const_connection(ivl_signal_t aff_sig, ivl_net_const_t con);
-		void 		add_const_connection(ivl_signal_t aff_sig, unsigned long aff_sig_msb, unsigned long aff_sig_lsb, ivl_net_const_t con);
 		void        save_graph();
 	private:
 		const char* path;
@@ -22,6 +20,8 @@ class Dot_File {
 		FILE*       get_file_ptr();
 		void        open_file();
 		void        close_file();
+		void 		add_const_connection(ivl_signal_t aff_sig, ivl_net_const_t con);
+		void 		add_const_spliced_connection(ivl_signal_t aff_sig, unsigned long aff_sig_msb, unsigned long aff_sig_lsb, ivl_net_const_t con);
 		unsigned long get_msb(ivl_signal_t sig);
 		unsigned long get_lsb(ivl_signal_t sig);
 };
