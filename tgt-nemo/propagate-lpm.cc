@@ -22,7 +22,7 @@ static unsigned get_nexus_width(ivl_nexus_t nex) {
 	return 0;
 }
 
-void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
+void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& critical_sigs, bool expand_search){
 	// LPM Type
 	const ivl_lpm_type_t lpm_type = ivl_lpm_type(lpm);
 	
@@ -64,6 +64,9 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm));
+						if (expand_search){
+							critical_sigs.push_back(sig);
+						}
 					}
 				}
 			}
@@ -97,6 +100,9 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 						// Nexus pointer points to a signal
 						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm), sig);
+						if (expand_search){
+							critical_sigs.push_back(sig);
+						}
 					}
 				}
 			}
@@ -125,6 +131,9 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 							// Nexus pointer points to a signal
 							if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 							df.add_connection(aff_sig, (curr_lsb + ivl_signal_width(sig) - 1), curr_lsb, sig);
+							if (expand_search){
+								critical_sigs.push_back(sig);
+							}
 							curr_lsb += ivl_signal_width(sig);
 						}
 					}

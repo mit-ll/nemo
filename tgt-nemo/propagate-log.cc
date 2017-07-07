@@ -3,7 +3,7 @@
 #include "ivl_target.h"
 #include "nemo.h"
 
-void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df) {
+void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& critical_sigs, bool expand_search) {
 	unsigned num_input_pins = ivl_logic_pins(logic);
 	unsigned num_nexus_ptrs = 0;
 	
@@ -38,6 +38,9 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 				if (!is_ivl_generated_signal(sig)){
 					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 					df.add_connection(aff_sig, sig);
+					if (expand_search){
+						critical_sigs.push_back(sig);
+					}
 				}
 			}
 			else if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr)) != logic){

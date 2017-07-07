@@ -6,7 +6,7 @@
 #include "nemo.h"
 
 /* Signals are easy... ish */
-void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
+void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& critical_sigs, bool expand_search) {
 	// Device Pointers
 	ivl_net_const_t con;
 	ivl_net_logic_t logic;
@@ -43,7 +43,10 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 					// Do not propagate local IVL compiler generated signals
 					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
-						df.add_connection(aff_sig, sig);	
+						df.add_connection(aff_sig, sig);
+						if (expand_search){
+							critical_sigs.push_back(sig);
+						}
 					}
 				// }
 			}
@@ -55,7 +58,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 			// otherwise the aff_sig is driving an input of the LPM
 			if (ivl_logic_pin(logic, 0) == nex) {
 				if (DEBUG_PRINTS){ printf("	input %d is a LOGIC device.\n", i); }
-				propagate_log(logic, aff_sig, df);
+				propagate_log(logic, aff_sig, df, critical_sigs, expand_search);
 			}
 		}
 		else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))){
@@ -63,7 +66,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 			// otherwise the aff_sig is driving an input of the LPM
 			if (ivl_lpm_q(lpm) == nex) {
 				if (DEBUG_PRINTS){ printf("	input %d is a LPM device (type: %d).\n", i, ivl_lpm_type(lpm)); }
-				propagate_lpm(lpm, aff_sig, df);
+				propagate_lpm(lpm, aff_sig, df, critical_sigs, expand_search);
      		}
 		} else if ((con = ivl_nexus_ptr_con(nex_ptr))){
 			continue;
