@@ -61,7 +61,7 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 				if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
 					// Do not propagate local IVL compiler generated signals
 					// unless they are outputs of constants
-					if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm));
 					}
@@ -93,7 +93,7 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 				if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
 					// Do not propagate local IVL compiler generated signals
 					// unless they are outputs of constants
-					if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+					if (!is_ivl_generated_signal(sig)){
 						// Nexus pointer points to a signal
 						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm), sig);
@@ -121,7 +121,7 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df) {
 					if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
 						// Do not propagate local IVL compiler generated signals
 						// unless they are outputs of constants
-						if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+						if (!is_ivl_generated_signal(sig)){
 							// Nexus pointer points to a signal
 							if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 							df.add_connection(aff_sig, (curr_lsb + ivl_signal_width(sig) - 1), curr_lsb, sig);

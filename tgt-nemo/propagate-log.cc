@@ -35,7 +35,7 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 			if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
 				// Do not propagate local IVL compiler generated signals
 				// unless they are outputs of constants
-				if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+				if (!is_ivl_generated_signal(sig)){
 					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 					df.add_connection(aff_sig, sig);
 				}

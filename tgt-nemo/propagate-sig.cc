@@ -41,8 +41,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df) {
 				// only propagate a signal to a signal if it is an output port
 				// if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT || ivl_signal_port(aff_sig) == IVL_SIP_INOUT){
 					// Do not propagate local IVL compiler generated signals
-					// unless they are outputs of constants
-					if (!ivl_signal_local(sig) || is_non_const_local_sig(sig)){
+					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig);
 					}
