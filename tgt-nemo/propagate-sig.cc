@@ -23,6 +23,13 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 		printf("num_ptrs: %d\n", ivl_nexus_ptrs(nex));
 	}
 
+	// If the module (IVL scope) is a std cell, no signals
+	// will be connected in the std cell template verilog file
+	// so propagate all inputs to all outputs.
+	if (ivl_scope_is_cell(ivl_signal_scope(aff_sig))){
+		propagate_std_cell_sigs(aff_sig, df);
+	} 
+
 	// Iterate through the pointers in a given nexus
 	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i += 1){
 		nex_ptr = ivl_nexus_ptr(nex, i);

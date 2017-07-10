@@ -18,8 +18,9 @@
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
 #define SEARCH_DEPTH 			 3
-#define CRITICAL_SIG_REGEX "[\(\ (to_)]sr\[0\]\|supv"
-// #define CRITICAL_SIG_REGEX "supv"
+// #define CRITICAL_SIG_REGEX "o1"
+// #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]\\|supv"
+#define CRITICAL_SIG_REGEX "supv"
 
 using namespace std;
 
@@ -34,8 +35,8 @@ void print_full_signal_name(ivl_signal_t sig);
 void print_signal_info(ivl_signal_t sig);
 
 void propagate_std_cell_sigs(
-	ivl_scope_t std_cell_scope, 
-	Dot_File& df);
+	ivl_signal_t aff_sig, 
+	Dot_File&    df);
 
 void propagate_sig(
 	ivl_signal_t 		  aff_sig, 

@@ -5,11 +5,16 @@
 #include "ivl_target.h"
 #include "nemo.h"
 
-void propagate_std_cell_sigs(ivl_scope_t std_cell_scope, Dot_File& df){
+void propagate_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
+	// If aff_signal is an input to the std cell module stub, return
+	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE){
+		return;
+	}
+
 	ivl_signal_t curr_input_sig  = NULL;
-	ivl_signal_t curr_output_sig = NULL;
-	unsigned     num_scope_sigs  = ivl_scope_sigs(std_cell_scope);
-	unsigned 	 num_scope_ports = ivl_scope_ports(std_cell_scope);
+	ivl_scope_t  curr_scope      = ivl_signal_scope(aff_sig);
+	unsigned     num_scope_sigs  = ivl_scope_sigs(ivl_signal_scope(aff_sig));
+	unsigned 	 num_scope_ports = ivl_scope_ports(ivl_signal_scope(aff_sig));
 
 	// Ensure number of signals is equal to the number of ports,
 	// i.e. the std cell module definition is just a template of
@@ -19,22 +24,15 @@ void propagate_std_cell_sigs(ivl_scope_t std_cell_scope, Dot_File& df){
 		assert(num_scope_sigs == num_scope_ports);
 	}
 
-	// Iterate over module output signals and connect all
-	// input signals to each output signal.
+	if (DEBUG_PRINTS){ printf("STD cell module found, propagate all inputs to ouput (%s).\n", ivl_signal_basename(aff_sig)); }
+
+	// Iterate over module input signals and connect all
+	// input signals to the aff_sig (output signal).
 	for (unsigned i = 0; i < num_scope_sigs; i++) {
-		curr_output_sig = ivl_scope_sig(std_cell_scope, i);
-		
-		// Add all connections
-		if (ivl_signal_port(curr_output_sig) == IVL_SIP_OUTPUT || ivl_signal_port(curr_output_sig) == IVL_SIP_INOUT) {
-			if (DEBUG_PRINTS){ printf("	output %d is signal %s\n", i, ivl_signal_basename(curr_output_sig)); }
-			
-			for (unsigned j = 0; j < num_scope_sigs; j++) {
-				curr_input_sig = ivl_scope_sig(std_cell_scope, j);
-				if (ivl_signal_port(curr_input_sig) == IVL_SIP_INPUT || ivl_signal_port(curr_input_sig) == IVL_SIP_INOUT) {
-					if (DEBUG_PRINTS){ printf("		input %d is signal %s\n", j, ivl_signal_basename(curr_input_sig)); }
-					df.add_connection(curr_output_sig, curr_input_sig);
-				}
-			}
+		curr_input_sig = ivl_scope_sig(curr_scope, i);
+		if (ivl_signal_port(curr_input_sig) == IVL_SIP_INPUT || ivl_signal_port(curr_input_sig) == IVL_SIP_INOUT) {
+			if (DEBUG_PRINTS){ printf("		input %d is signal %s\n", i, ivl_signal_basename(curr_input_sig)); }
+			df.add_connection(aff_sig, curr_input_sig);
 		}
 	}
 }

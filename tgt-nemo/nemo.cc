@@ -95,16 +95,6 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_F
 			}
 		}
 	}
-
-	// If the module (IVL scope) is a std cell, no signals
-	// will be connected in the std cell template verilog file
-	// so propagate all inputs to all outputs.
-	// if (ivl_scope_is_cell(scope)){
-	// 	if (DEBUG_PRINTS){ 
-	// 		printf("STD cell module found (%s), propagate all inputs to all ouputs.\n", ivl_scope_basename(scope)); 
-	// 	}
-	// 	propagate_std_cell_sigs(scope, df);
-	// } 
 }
 
 // Returns true if the signal name found in the netlist 
