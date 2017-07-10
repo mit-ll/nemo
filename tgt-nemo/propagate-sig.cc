@@ -5,7 +5,6 @@
 #include "ivl_target.h"
 #include "nemo.h"
 
-/* Signals are easy... ish */
 void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& critical_sigs, bool expand_search) {
 	// Device Pointers
 	ivl_net_const_t con;
@@ -29,17 +28,13 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 		nex_ptr = ivl_nexus_ptr(nex, i);
 		assert(nex_ptr);
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))){
-			// Means that the signals are the same. Usually happens on module hookups
-			// 
-			// Also if two signals in a module are hooked up to the same thing
-			// 
-			// Also if a signal is an input signal (i.e. nothing connects to it)
-
 			// If the signal is different signal --> add connection
-			//@TODO: it is difficult to know what signal is an output vs inputs
-			if (aff_sig != sig){
-				// only propagate a signal to a signal if it is an output port
-				// if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT || ivl_signal_port(aff_sig) == IVL_SIP_INOUT){
+			if (aff_sig != sig) {
+				// Only propagate the output signal of a child module to 
+				// the output of a parent module. Propagate all non-output 
+				// signals to other signals.
+				if ((ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) != IVL_SIP_OUTPUT) ||
+				   (ivl_signal_port(aff_sig) != IVL_SIP_OUTPUT)){
 					// Do not propagate local IVL compiler generated signals
 					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
@@ -48,7 +43,22 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 							critical_sigs.push_back(sig);
 						}
 					}
-				// }
+				} else if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT) {
+					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
+					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
+					// If the aff_sig scope is the parent of the sig scope,
+					// add a connection between the signals.
+					if (ivl_scope_parent(sig_scope) == aff_sig_scope){
+						// Do not propagate local IVL compiler generated signals
+						if (!is_ivl_generated_signal(sig)) {
+							if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+							df.add_connection(aff_sig, sig);
+							if (expand_search){
+								critical_sigs.push_back(sig);
+							}
+						}
+					}
+				}
 			}
 		}
 		else if ((logic = ivl_nexus_ptr_log(nex_ptr))){ 

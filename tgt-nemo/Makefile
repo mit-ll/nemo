@@ -10,20 +10,23 @@ CC=g++
 CFLAGS=-I$(IDIR) -fpic
 # -Wall -Wextra -Wshadow -g -O2
 LIBS=-lprotobuf
-
 TGT=nemo
-# TOP_MODULE=up_counter
-TOP_MODULE=test
-# TOP_MODULE=orpsoc_top
-# DOT=up_counter
-DOT=test
-# DOT=orpsoc_top.express_100MHz
-# NETLIST=../up_counter.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
-NETLIST=../test.v
-# NETLIST=../orpsoc_top.express_100MHz.nl.v /Volumes/ttrippel/A2/cp65npksdst.vm
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 # DEPS=ttb.h ttb_signal.h ttb_dot_file.h ivl_target.h
+
+# TOP_MODULE=up_counter
+# TOP_MODULE=test
+TOP_MODULE=orpsoc_top
+
+# DOT=up_counter
+# DOT=test
+DOT=orpsoc_top.express_100MHz
+
+# NETLIST=../up_counter.nl.v ../std_cell_defs.vm
+# NETLIST=../test.v
+NETLIST=../orpsoc_top.express_100MHz.nl.v ../std_cell_defs.vm
+
 
 all: $(TGT) confs install
 
@@ -49,11 +52,11 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST)
+	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST)
 	dot $(DOT).dot -Tpdf -o $(DOT).pdf
 
 runsave:
-	../iverilog/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST) > test.txt
+	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST) > test.txt
 	dot $(DOT).dot -Tpdf -o $(DOT).pdf
 
 clean:

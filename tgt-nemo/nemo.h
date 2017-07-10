@@ -17,21 +17,25 @@
 #define DEBUG_PRINTS 			 false
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
-// #define VISITED_ATTR_STRING "v"
-#define SEARCH_DEPTH 3
-#define CRITICAL_SIG_REGEX "o1"
-// #define CRITICAL_SIG_REGEX "[\(\ (to_)]sr\[0\]\|supv"
+#define SEARCH_DEPTH 			 3
+#define CRITICAL_SIG_REGEX "[\(\ (to_)]sr\[0\]\|supv"
+// #define CRITICAL_SIG_REGEX "supv"
 
 using namespace std;
 
-void find_critical_sigs(vector<ivl_signal_t>& critical_sigs, ivl_scope_t* root_scopes, unsigned num_root_scopes);
-void find_critical_scope_sigs(ivl_scope_t scope, vector<ivl_signal_t>& critical_sigs);
+void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df);
+void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, Dot_File& df);
+void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_File& df);
 bool is_critical_sig(ivl_signal_t sig);
 bool is_ivl_generated_signal(ivl_signal_t sig);
 ivl_net_const_t is_const_local_sig(ivl_signal_t sig);
 void print_signal_attrs(ivl_signal_t sig);
 void print_full_signal_name(ivl_signal_t sig);
-void print_signals(vector<ivl_signal_t>& critical_sigs);
+void print_signal_info(ivl_signal_t sig);
+
+void propagate_std_cell_sigs(
+	ivl_scope_t std_cell_scope, 
+	Dot_File& df);
 
 void propagate_sig(
 	ivl_signal_t 		  aff_sig, 
