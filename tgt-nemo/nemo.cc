@@ -5,13 +5,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <vector>
 #include <string>
 #include <regex>
 
 #include "nemo.h"
 
-void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df){
+void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals){
 	ivl_net_const_t      con;           // temp IVL constant object
 	ivl_signal_t 		 aff_sig;		// temp IVL signal object
 	vector<ivl_signal_t> critical_sigs; // vector of critical signals being propagated
@@ -34,24 +33,26 @@ void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df){
 	while (!critical_sigs.empty()){
 		//@TODO: Support more than 1 dimension vector
 		//       Though it looks like it should be ok for OR1200
-		aff_sig = *(critical_sigs.begin());
+		aff_sig = *(critical_sigs.begin()); // get critical signal at beginning of queue
 		assert(ivl_signal_packed_dimensions(aff_sig) <= 1 && "ERROR: cannot support multi-dimensional vectors.\n");
-		if (depth_counter > 0 && !ENUMERATE_ENTIRE_CIRCUIT){
+		if ((depth_counter > 0) && (expanded_signals.find(aff_sig) == expanded_signals.end()) && !ENUMERATE_ENTIRE_CIRCUIT){
 			propagate_sig(aff_sig, df, critical_sigs, true);
 			depth_counter--;
-		} else{
+		} else if (expanded_signals.find(aff_sig) == expanded_signals.end()) {
 			propagate_sig(aff_sig, df, critical_sigs, false);
 		}
+		expanded_signals.insert(aff_sig);   // add the critical signal to the set of expanded signals
 		critical_sigs.erase(critical_sigs.begin());
 	}
 }
 
 // Finds all security critical signals
 void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, Dot_File& df){
-	unsigned num_critical_signals_found = 0;
+	unsigned          num_critical_signals_found = 0;
+	set<ivl_signal_t> expanded_signals;
 
 	for (unsigned i = 0; i < num_root_scopes; i++) {
-		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, df);
+		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, df, expanded_signals);
 	}
 
 	printf("\nNumber of Critical Signals Found: %d\n", num_critical_signals_found);
@@ -59,7 +60,7 @@ void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, Dot_
 
 // Recurse through IVL scope objects (in this case only modules)
 // to find all security critical signals
-void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_File& df){
+void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_File& df, set<ivl_signal_t>& expanded_signals){
 	//@TODO: Look more into dealing with scopes that are not modules
 	if (ivl_scope_type(scope) != IVL_SCT_MODULE) {
 		fprintf(stderr, "ERROR: cannot parse scope type (%d)\n", ivl_scope_type(scope));
@@ -69,7 +70,7 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_F
 
 	// Rescurse into any submodules
 	for (unsigned i = 0; i < ivl_scope_childs(scope); i++) {
-		find_critical_scope_sigs(ivl_scope_child(scope, i), num_sigs_found, df);
+		find_critical_scope_sigs(ivl_scope_child(scope, i), num_sigs_found, df, expanded_signals);
 	}
 
 	// Enumerate all signals in each scope
@@ -91,7 +92,7 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_F
 				(*num_sigs_found)++;
 				// Find critical signal dependencies
 				print_signal_info(current_ivl_signal);
-				find_signal_dependencies(current_ivl_signal, df);
+				find_signal_dependencies(current_ivl_signal, df, expanded_signals);
 			}
 		}
 	}

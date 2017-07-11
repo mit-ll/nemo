@@ -62,9 +62,9 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, vect
 					// Do not propagate local IVL compiler generated signals
 					// unless they are outputs of constants
 					if (!is_ivl_generated_signal(sig)){
-						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm));
-						if (expand_search){
+						if (expand_search && !ivl_signal_local(sig)){
 							critical_sigs.push_back(sig);
 						}
 					}
@@ -98,9 +98,9 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, vect
 					// unless they are outputs of constants
 					if (!is_ivl_generated_signal(sig)){
 						// Nexus pointer points to a signal
-						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+						if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm), sig);
-						if (expand_search){
+						if (expand_search && !ivl_signal_local(sig)){
 							critical_sigs.push_back(sig);
 						}
 					}
@@ -129,9 +129,9 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, vect
 						// unless they are outputs of constants
 						if (!is_ivl_generated_signal(sig)){
 							// Nexus pointer points to a signal
-							if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+							if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 							df.add_connection(aff_sig, (curr_lsb + ivl_signal_width(sig) - 1), curr_lsb, sig);
-							if (expand_search){
+							if (expand_search && !ivl_signal_local(sig)){
 								critical_sigs.push_back(sig);
 							}
 							curr_lsb += ivl_signal_width(sig);

@@ -44,9 +44,9 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 				   (ivl_signal_port(aff_sig) != IVL_SIP_OUTPUT)){
 					// Do not propagate local IVL compiler generated signals
 					if (!is_ivl_generated_signal(sig)){
-						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig);
-						if (expand_search){
+						if (expand_search && !ivl_signal_local(sig)){
 							critical_sigs.push_back(sig);
 						}
 					}
@@ -58,9 +58,9 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 					if (ivl_scope_parent(sig_scope) == aff_sig_scope){
 						// Do not propagate local IVL compiler generated signals
 						if (!is_ivl_generated_signal(sig)) {
-							if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s).\n", i, ivl_signal_basename(sig)); }
+							if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 							df.add_connection(aff_sig, sig);
-							if (expand_search){
+							if (expand_search && !ivl_signal_local(sig)){
 								critical_sigs.push_back(sig);
 							}
 						}

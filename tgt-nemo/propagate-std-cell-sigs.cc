@@ -24,14 +24,14 @@ void propagate_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
 		assert(num_scope_sigs == num_scope_ports);
 	}
 
-	if (DEBUG_PRINTS){ printf("STD cell module found, propagate all inputs to ouput (%s).\n", ivl_signal_basename(aff_sig)); }
+	if (DEBUG_PRINTS){ printf("STD cell module found, propagate all inputs to ouput (%s.%s).\n", ivl_scope_name(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig)); }
 
 	// Iterate over module input signals and connect all
 	// input signals to the aff_sig (output signal).
 	for (unsigned i = 0; i < num_scope_sigs; i++) {
 		curr_input_sig = ivl_scope_sig(curr_scope, i);
 		if (ivl_signal_port(curr_input_sig) == IVL_SIP_INPUT || ivl_signal_port(curr_input_sig) == IVL_SIP_INOUT) {
-			if (DEBUG_PRINTS){ printf("		input %d is signal %s\n", i, ivl_signal_basename(curr_input_sig)); }
+			if (DEBUG_PRINTS){ printf("		input %d is signal %s.%s\n", i, ivl_scope_name(ivl_signal_scope(curr_input_sig)), ivl_signal_basename(curr_input_sig)); }
 			df.add_connection(aff_sig, curr_input_sig);
 		}
 	}
