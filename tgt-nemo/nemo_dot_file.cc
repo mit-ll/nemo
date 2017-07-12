@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <string>
+#include <algorithm>
 
 #include <ivl_target.h>
 #include "nemo.h"

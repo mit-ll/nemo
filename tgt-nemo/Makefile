@@ -7,7 +7,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 
 IDIR=../iverilog
 CC=g++
-CFLAGS=-I$(IDIR) -fpic -std=c++11
+CFLAGS=-I$(IDIR) -fpic -std=gnu++0x
 # -Wall -Wextra -Wshadow -g -O2
 LIBS=-lprotobuf
 TGT=nemo
