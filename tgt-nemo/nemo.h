@@ -11,7 +11,6 @@
  */
 
 #include <set>
-#include <vector>
 #include <ivl_target.h>
 #include "nemo_dot_file.h"
 
@@ -40,23 +39,23 @@ void propagate_std_cell_sigs(
 	Dot_File&    df);
 
 void propagate_sig(
-	ivl_signal_t 		  aff_sig, 
-	Dot_File& 			  df, 
-	vector<ivl_signal_t>& critical_sigs,
-	bool 				  expand_search);
+	ivl_signal_t 	   aff_sig, 
+	Dot_File& 		   df, 
+	set<ivl_signal_t>& critical_sigs,
+	bool 			   expand_search);
 
 void propagate_log(
 	const ivl_net_logic_t logic, 
-	ivl_signal_t 		  aff_sig, 
-	Dot_File& 			  df, 
-	vector<ivl_signal_t>& critical_sigs,
-	bool 				  expand_search);
+	ivl_signal_t 	   aff_sig, 
+	Dot_File& 		   df, 
+	set<ivl_signal_t>& critical_sigs,
+	bool 		       expand_search);
 
 void propagate_lpm(
-	const ivl_lpm_t 	  lpm, 
-	ivl_signal_t 		  aff_sig, 
-	Dot_File& 			  df, 
-	vector<ivl_signal_t>& critical_sigs,
-	bool 				  expand_search);
+	const ivl_lpm_t	    lpm, 
+	ivl_signal_t 	    aff_sig, 
+	Dot_File& 		    df, 
+	set<ivl_signal_t>& critical_sigs,
+	bool 			   expand_search);
 
 #endif

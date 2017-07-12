@@ -5,7 +5,7 @@
 #include "ivl_target.h"
 #include "nemo.h"
 
-void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& critical_sigs, bool expand_search) {
+void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, bool expand_search) {
 	// Device Pointers
 	ivl_net_const_t con;
 	ivl_net_logic_t logic;
@@ -44,11 +44,13 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 				   (ivl_signal_port(aff_sig) != IVL_SIP_OUTPUT)){
 					// Do not propagate local IVL compiler generated signals
 					if (!is_ivl_generated_signal(sig)){
-						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
+						if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig);
 						if (expand_search && !ivl_signal_local(sig)){
-							critical_sigs.push_back(sig);
+							critical_sigs.insert(sig);
+							if (DEBUG_PRINTS){ printf(" Expanded.\n"); }
 						}
+						if (DEBUG_PRINTS){ printf("\n"); }
 					}
 				} else if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT) {
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
@@ -58,11 +60,13 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& cri
 					if (ivl_scope_parent(sig_scope) == aff_sig_scope){
 						// Do not propagate local IVL compiler generated signals
 						if (!is_ivl_generated_signal(sig)) {
-							if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
+							if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 							df.add_connection(aff_sig, sig);
 							if (expand_search && !ivl_signal_local(sig)){
-								critical_sigs.push_back(sig);
+								critical_sigs.insert(sig);
+								if (DEBUG_PRINTS){ printf(" Expanded.\n"); }
 							}
+							if (DEBUG_PRINTS){ printf("\n"); }
 						}
 					}
 				}

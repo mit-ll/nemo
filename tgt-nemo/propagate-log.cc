@@ -3,7 +3,7 @@
 #include "ivl_target.h"
 #include "nemo.h"
 
-void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, vector<ivl_signal_t>& critical_sigs, bool expand_search) {
+void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, bool expand_search) {
 	unsigned num_input_pins = ivl_logic_pins(logic);
 	unsigned num_nexus_ptrs = 0;
 	
@@ -36,11 +36,13 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 				// Do not propagate local IVL compiler generated signals
 				// unless they are outputs of constants
 				if (!is_ivl_generated_signal(sig)){
-					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
+					if (DEBUG_PRINTS){ printf("				input %d is a SIGNAL device (%s.%s).", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 					df.add_connection(aff_sig, sig);
 					if (expand_search && !ivl_signal_local(sig)){
-						critical_sigs.push_back(sig);
+						critical_sigs.insert(sig);
+						if (DEBUG_PRINTS){ printf(" Expanded.\n"); }
 					}
+					if (DEBUG_PRINTS){ printf("\n"); }
 				}
 			}
 			else if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr)) != logic){

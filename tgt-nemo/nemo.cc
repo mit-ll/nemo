@@ -11,13 +11,15 @@
 #include "nemo.h"
 
 void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals){
-	ivl_net_const_t      con;           // temp IVL constant object
-	ivl_signal_t 		 aff_sig;		// temp IVL signal object
-	vector<ivl_signal_t> critical_sigs; // vector of critical signals being propagated
-	unsigned             depth_counter = SEARCH_DEPTH; // graph depth searched for dependencies
+	ivl_net_const_t   con;           // temp IVL constant object
+	ivl_signal_t      aff_sig;		 // temp IVL signal object
+	set<ivl_signal_t> critical_sigs; // set of critical signals being propagated
+	unsigned          depth_counter = SEARCH_DEPTH; // graph depth searched for dependencies
 
-	// Add base signal to critical signal vector
-	critical_sigs.push_back(base_sig);
+	// Add base signal to critical signal set
+	if (expanded_signals.find(base_sig) == expanded_signals.end()){
+		critical_sigs.insert(base_sig);
+	}
 
 	// Print node to graphviz dot file
 	if ((con = is_const_local_sig(base_sig))) { 
@@ -41,8 +43,8 @@ void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signa
 		} else if (expanded_signals.find(aff_sig) == expanded_signals.end()) {
 			propagate_sig(aff_sig, df, critical_sigs, false);
 		}
-		expanded_signals.insert(aff_sig);   // add the critical signal to the set of expanded signals
-		critical_sigs.erase(critical_sigs.begin());
+		expanded_signals.insert(aff_sig);  			// add signal to set of expanded signals
+		critical_sigs.erase(critical_sigs.begin()); // remove from currently exploring set
 	}
 }
 
