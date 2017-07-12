@@ -9,11 +9,11 @@ IDIR=../iverilog
 CC=g++
 CFLAGS=-I$(IDIR) -fpic -std=gnu++0x
 # -Wall -Wextra -Wshadow -g -O2
-LIBS=-lprotobuf
+
+LIBS=
 TGT=nemo
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
-# DEPS=ttb.h ttb_signal.h ttb_dot_file.h ivl_target.h
 
 # TOP_MODULE=up_counter
 # TOP_MODULE=test
@@ -31,7 +31,7 @@ NETLIST=../orpsoc_top.express_100MHz.nl.v ../std_cell_defs.vm
 all: $(TGT) confs install
 
 $(TGT): $(OBJS)
-	$(CC) -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
+	$(CC) -undefined suppress -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
  
 %.o: %.cc
 	$(CC) $(CFLAGS) -c -o $@ $<
