@@ -31,7 +31,7 @@ NETLIST=../orpsoc_top.express_100MHz.nl.v ../std_cell_defs.vm
 all: $(TGT) confs install
 
 $(TGT): $(OBJS)
-	$(CC) -undefined suppress -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
+	$(CC) -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
  
 %.o: %.cc
 	$(CC) $(CFLAGS) -c -o $@ $<
