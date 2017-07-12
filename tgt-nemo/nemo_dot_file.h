@@ -1,6 +1,9 @@
 #ifndef __NEMO_DOT_FILE__
 #define __NEMO_DOT_FILE__
 
+#include <cstdio>
+#include <cstdlib>
+
 class Dot_File {
 	public:
 		Dot_File();
