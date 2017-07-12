@@ -56,12 +56,16 @@ run:
 	dot $(DOT).dot -Tpdf -o $(DOT).pdf
 
 runsave:
-	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST) > test.txt
+	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST) > output.txt
 	dot $(DOT).dot -Tpdf -o $(DOT).pdf
 
 clean:
 	rm -f *.o
 	rm -f *.tgt
 	rm -f *.conf
+
+cleandot:
+	rm -f *.dot
+	rm -f *.pdf
 
 cleanall: clean uninstall
