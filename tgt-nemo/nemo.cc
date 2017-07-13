@@ -10,14 +10,14 @@
 
 #include "nemo.h"
 
-void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals){
+void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signal_t>& explored_signals){
 	ivl_net_const_t   con;           // temp IVL constant object
 	ivl_signal_t      aff_sig;		 // temp IVL signal object
 	set<ivl_signal_t> critical_sigs; // set of critical signals being propagated
 	unsigned          depth_counter = SEARCH_DEPTH; // graph depth searched for dependencies
 
 	// Add base signal to critical signal set
-	if (expanded_signals.find(base_sig) == expanded_signals.end()){
+	if (!is_sig_explored(explored_signals, base_sig)){
 		critical_sigs.insert(base_sig);
 	}
 
@@ -33,28 +33,31 @@ void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signa
 
 	// Determine the dependencies for critical base signals
 	while (!critical_sigs.empty()){
+		if (DEBUG_PRINTS){ print_signal_queues(critical_sigs, explored_signals); }
+
 		//@TODO: Support more than 1 dimension vector
 		//       Though it looks like it should be ok for OR1200
-		aff_sig = *(critical_sigs.begin()); // get critical signal at beginning of queue
+		aff_sig = *(critical_sigs.begin()); // get critical signal at beginning of queue/set
 		assert(ivl_signal_packed_dimensions(aff_sig) <= 1 && "ERROR: cannot support multi-dimensional vectors.\n");
-		if ((depth_counter > 0) && (expanded_signals.find(aff_sig) == expanded_signals.end()) && !ENUMERATE_ENTIRE_CIRCUIT){
-			propagate_sig(aff_sig, df, critical_sigs, true);
-			depth_counter--;
-		} else if (expanded_signals.find(aff_sig) == expanded_signals.end()) {
-			propagate_sig(aff_sig, df, critical_sigs, false);
+		
+		if ((depth_counter-- > 0) && !is_sig_explored(explored_signals, aff_sig) && !ENUMERATE_ENTIRE_CIRCUIT){
+			propagate_sig(aff_sig, df, critical_sigs, explored_signals, true);
+		} else if (!is_sig_explored(explored_signals, aff_sig)) {
+			propagate_sig(aff_sig, df, critical_sigs, explored_signals, false);
 		}
-		expanded_signals.insert(aff_sig);  			// add signal to set of expanded signals
-		critical_sigs.erase(critical_sigs.begin()); // remove from currently exploring set
+
+		explored_signals.insert(aff_sig); // add signal to set of expanded signals
+		critical_sigs.erase(aff_sig);     // remove from currently exploring set
 	}
 }
 
 // Finds all security critical signals
 void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, Dot_File& df){
 	unsigned          num_critical_signals_found = 0;
-	set<ivl_signal_t> expanded_signals;
+	set<ivl_signal_t> explored_signals;
 
 	for (unsigned i = 0; i < num_root_scopes; i++) {
-		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, df, expanded_signals);
+		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, df, explored_signals);
 	}
 
 	printf("\nNumber of Critical Signals Found: %d\n", num_critical_signals_found);
@@ -62,7 +65,7 @@ void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, Dot_
 
 // Recurse through IVL scope objects (in this case only modules)
 // to find all security critical signals
-void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_File& df, set<ivl_signal_t>& expanded_signals){
+void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_File& df, set<ivl_signal_t>& explored_signals){
 	//@TODO: Look more into dealing with scopes that are not modules
 	if (ivl_scope_type(scope) != IVL_SCT_MODULE) {
 		fprintf(stderr, "ERROR: cannot parse scope type (%d)\n", ivl_scope_type(scope));
@@ -72,7 +75,7 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_F
 
 	// Rescurse into any submodules
 	for (unsigned i = 0; i < ivl_scope_childs(scope); i++) {
-		find_critical_scope_sigs(ivl_scope_child(scope, i), num_sigs_found, df, expanded_signals);
+		find_critical_scope_sigs(ivl_scope_child(scope, i), num_sigs_found, df, explored_signals);
 	}
 
 	// Enumerate all signals in each scope
@@ -94,10 +97,16 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, Dot_F
 				(*num_sigs_found)++;
 				// Find critical signal dependencies
 				print_signal_info(current_ivl_signal);
-				find_signal_dependencies(current_ivl_signal, df, expanded_signals);
+				find_signal_dependencies(current_ivl_signal, df, explored_signals);
 			}
 		}
 	}
+}
+
+// Returns true if the signal has already been explored,
+// i.e. the signal has already been passed to propa
+bool is_sig_explored(set<ivl_signal_t>& explored_signals, ivl_signal_t sig){
+	return (explored_signals.find(sig) != explored_signals.end());
 }
 
 // Returns true if the signal name found in the netlist 
@@ -170,6 +179,65 @@ ivl_net_const_t is_const_local_sig(ivl_signal_t sig){
 
 	return con;
 }
+
+bool is_sig_output(ivl_signal_t sig){
+	if (ivl_signal_port(sig) == IVL_SIP_OUTPUT || ivl_signal_port(sig) == IVL_SIP_INOUT) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool are_both_signals_outputs(ivl_signal_t sig1, ivl_signal_t sig2) {
+	if (is_sig_output(sig1) && is_sig_output(sig2)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool is_sig1_output_and_sig2_not(ivl_signal_t sig1, ivl_signal_t sig2) {
+	if (is_sig_output(sig1) && !is_sig_output(sig2)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void connect_signals(ivl_signal_t aff_sig, ivl_signal_t sig, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, Dot_File& df, bool expand_search) {
+	pair<set<ivl_signal_t>::iterator, bool> insert_ret;
+	
+	// Do not connect local IVL compiler generated signals
+	if (!is_ivl_generated_signal(sig) && !is_sig_explored(explored_sigs, sig)) {
+		if (DEBUG_PRINTS){ printf("	input is a SIGNAL device (%s.%s).", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
+		df.add_connection(aff_sig, sig);
+
+		// Only expand search to NON IVL generated signals,
+		// excluding signals generated  by IVL from constants. 
+		if (expand_search && !ivl_signal_local(sig)){
+			insert_ret = critical_sigs.insert(sig);
+			if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
+		}
+		if (DEBUG_PRINTS){ printf("\n"); }
+	}
+}
+
+void print_signal_queues(set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_signals){
+	// Print critical signals set
+	printf("Critical Signals: |");
+	for (set<ivl_signal_t>::iterator it = critical_sigs.begin(); it != critical_sigs.end(); it++){
+		printf("%s.%s| ", ivl_scope_name(ivl_signal_scope(*it)), ivl_signal_basename(*it));
+	}
+	printf("\n");
+
+	// Print expanded signals set
+	printf("Expanded Signals: |");
+	for (set<ivl_signal_t>::iterator it = explored_signals.begin(); it != explored_signals.end(); it++){
+		printf("%s.%s| ", ivl_scope_name(ivl_signal_scope(*it)), ivl_signal_basename(*it));
+	}
+	printf("\n\n");
+}
+
 
 // Prints the full signal name (<module name>.<signal name>) to stdin
 void print_full_signal_name(ivl_signal_t sig){

@@ -9,6 +9,9 @@ void propagate_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
 	// If aff_signal is an input to the std cell module stub, return
 	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE){
 		return;
+	} else if (ivl_signal_port(aff_sig) == IVL_SIP_INOUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE) {
+		assert(false && "Error: propagate_std_cell_sigs() -- invalid port directions in std cell.\n");
+		return;
 	}
 
 	ivl_signal_t curr_input_sig  = NULL;
