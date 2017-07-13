@@ -21,7 +21,7 @@ TOP_MODULE=orpsoc_top
 
 # DOT=up_counter
 # DOT=test
-DOT=orpsoc_top.express_100MHz.debug
+DOT=orpsoc_top.express_100MHz
 
 # NETLIST=../up_counter.nl.v ../std_cell_defs.vm
 # NETLIST=../test.v

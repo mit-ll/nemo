@@ -17,7 +17,7 @@
 #define DEBUG_PRINTS 			 false
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
-#define SEARCH_DEPTH 			 3
+#define SEARCH_DEPTH 			 6
 // #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]\\|supv"
 #define CRITICAL_SIG_REGEX "supv"
 
