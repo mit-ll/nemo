@@ -14,12 +14,12 @@
 #include <ivl_target.h>
 #include "nemo_dot_file.h"
 
-#define DEBUG_PRINTS 			 false
+#define DEBUG_PRINTS 			 true
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
-#define SEARCH_DEPTH 			 6
+#define SEARCH_DEPTH 			 5
 // #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]\\|supv"
-#define CRITICAL_SIG_REGEX "supv"
+#define CRITICAL_SIG_REGEX "o"
 
 using namespace std;
 
@@ -48,18 +48,18 @@ void connect_signals(
 	Dot_File&          df, 
 	bool               expand_search);
 
-void propagate_std_cell_sigs(
+void expand_std_cell_sigs(
 	ivl_signal_t aff_sig, 
 	Dot_File&    df);
 
-void propagate_sig(
+void expand_sig(
 	ivl_signal_t 	   aff_sig, 
 	Dot_File& 		   df, 
 	set<ivl_signal_t>& critical_sigs,
 	set<ivl_signal_t>& explored_sigs,
 	bool 			   expand_search);
 
-void propagate_log(
+void expand_log(
 	const ivl_net_logic_t logic, 
 	ivl_signal_t 	   aff_sig, 
 	Dot_File& 		   df, 
@@ -67,7 +67,7 @@ void propagate_log(
 	set<ivl_signal_t>& explored_sigs,
 	bool 		       expand_search);
 
-void propagate_lpm(
+void expand_lpm(
 	const ivl_lpm_t	    lpm, 
 	ivl_signal_t 	    aff_sig, 
 	Dot_File& 		    df, 

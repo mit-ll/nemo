@@ -4,7 +4,7 @@
 
 #include "nemo.h"
 
-void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	// Device Pointers
 	ivl_net_const_t con;
 	ivl_net_logic_t logic;
@@ -24,19 +24,19 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critic
 
 	// If the module (IVL scope) is a std cell, no signals
 	// will be connected in the std cell template verilog file
-	// so propagate all inputs to all outputs.
+	// so expand all inputs to all outputs.
 	if (ivl_scope_is_cell(ivl_signal_scope(aff_sig))){
-		propagate_std_cell_sigs(aff_sig, df);
+		expand_std_cell_sigs(aff_sig, df);
 	} 
 
 	// Iterate through the pointers in a given nexus
 	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i++) {
 		nex_ptr = ivl_nexus_ptr(nex, i);
-		assert(nex_ptr && "Error: propagate_sig() -- nexus pointer is invalid.\n");
+		assert(nex_ptr && "Error: expand_sig() -- nexus pointer is invalid.\n");
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))) {
 			// If the signal is different signal than itself --> add connection
 			if (aff_sig != sig) {
-				// Only propagate the output signal of a child module to 
+				// Only expand the output signal of a child module to 
 				// the output of a parent module.
 				if (are_both_signals_outputs(aff_sig, sig)) {
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
@@ -60,7 +60,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critic
 			// otherwise the aff_sig is driving an input of the LPM
 			if (ivl_logic_pin(logic, 0) == nex) {
 				if (DEBUG_PRINTS){ printf("	input %d is a LOGIC device.\n", i); }
-				propagate_log(logic, aff_sig, df, critical_sigs, explored_sigs, expand_search);
+				expand_log(logic, aff_sig, df, critical_sigs, explored_sigs, expand_search);
 			}
 		}
 		else if ((lpm = ivl_nexus_ptr_lpm(nex_ptr))) {
@@ -68,7 +68,7 @@ void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critic
 			// otherwise the aff_sig is driving an input of the LPM
 			if (ivl_lpm_q(lpm) == nex) {
 				if (DEBUG_PRINTS){ printf("	input %d is a LPM device (type: %d).\n", i, ivl_lpm_type(lpm)); }
-				propagate_lpm(lpm, aff_sig, df, critical_sigs, explored_sigs, expand_search);
+				expand_lpm(lpm, aff_sig, df, critical_sigs, explored_sigs, expand_search);
      		}
 		} else if ((con = ivl_nexus_ptr_con(nex_ptr))) {
 			// Ignore constants because they are always attached to IVL 

@@ -10,15 +10,24 @@ Example Nemo input files, a Verilog netlist and a standard cell Verilog netlist,
 
 #### Cloning Git Repositories ####
 
-1. Clone IVL Repo --> git clone
-1. Clone IVL Repo --> git clone
+1. Clone IVL  Repo --> git clone git://github.com/steveicarus/iverilog.git
+2. Clone Nemo Repo --> git clone
 
-# Building/Installing IVL
+#### Building/Installing IVL ####
 
-# Building/Installing Nemo
+Detailed instructions on this process can be found here: http://iverilog.wikia.com/wiki/Installation_Guide, but a summary is provided below.
+
+1. cd iverilog
+2. sh autoconf.sh
+3. ./configure --prefix=<full path of iverilog directory>
+4. make install
+5. cd ..
+
+#### Building/Installing Nemo ####
 
 
-# Checkout
+
+#### Checkout ####
 
 Icarus Verilog is a submodule in our project repository. This makes it
 easy for us to track with the main Icarus Verilog repository. Using

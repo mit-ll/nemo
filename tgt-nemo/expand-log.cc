@@ -2,21 +2,17 @@
 
 #include "nemo.h"
 
-void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	unsigned num_input_pins = ivl_logic_pins(logic);
-	unsigned num_nexus_ptrs = 0;
 	
 	// Device Pointers
 	ivl_signal_t    sig;
-	ivl_net_const_t con;
 	ivl_net_logic_t prev_logic;
 	ivl_lpm_t       prev_lpm;
 
 	// Nexus Pointers
 	ivl_nexus_t     input_pin_nexus;
 	ivl_nexus_ptr_t nexus_ptr;
-
-	pair<set<ivl_signal_t>::iterator, bool> insert_ret;
 
 	if (DEBUG_PRINTS){ 
 		printf("		Logic (%s) is of type %d\n", ivl_logic_basename(logic), ivl_logic_type(logic));
@@ -34,7 +30,7 @@ void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& 
 		for (unsigned j = 0; j < ivl_nexus_ptrs(input_pin_nexus); j++){
 			nexus_ptr = ivl_nexus_ptr(input_pin_nexus, j);
 			if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
-				// Do not propagate local IVL compiler generated signals
+				// Do not expand local IVL compiler generated signals
 				// unless they are outputs of constants
 				connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search);
 			}

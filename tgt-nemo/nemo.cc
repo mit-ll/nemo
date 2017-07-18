@@ -11,7 +11,7 @@
 void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signal_t>& explored_signals){
 	ivl_net_const_t   con;           // temp IVL constant object
 	ivl_signal_t      aff_sig;		 // temp IVL signal object
-	set<ivl_signal_t> critical_sigs; // set of critical signals being propagated
+	set<ivl_signal_t> critical_sigs; // set of critical signals being expanded
 	unsigned          depth_counter = SEARCH_DEPTH; // graph depth searched for dependencies
 
 	// Add base signal to critical signal set
@@ -39,9 +39,9 @@ void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signa
 		assert(ivl_signal_packed_dimensions(aff_sig) <= 1 && "ERROR: cannot support multi-dimensional vectors.\n");
 		
 		if ((depth_counter-- > 0) && !is_sig_explored(explored_signals, aff_sig) && !ENUMERATE_ENTIRE_CIRCUIT){
-			propagate_sig(aff_sig, df, critical_sigs, explored_signals, true);
+			expand_sig(aff_sig, df, critical_sigs, explored_signals, true);
 		} else if (!is_sig_explored(explored_signals, aff_sig)) {
-			propagate_sig(aff_sig, df, critical_sigs, explored_signals, false);
+			expand_sig(aff_sig, df, critical_sigs, explored_signals, false);
 		}
 
 		explored_signals.insert(aff_sig); // add signal to set of expanded signals

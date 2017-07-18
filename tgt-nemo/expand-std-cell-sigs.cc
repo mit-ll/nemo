@@ -4,12 +4,12 @@
 
 #include "nemo.h"
 
-void propagate_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
+void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
 	// If aff_signal is an input to the std cell module stub, return
 	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE){
 		return;
 	} else if (ivl_signal_port(aff_sig) == IVL_SIP_INOUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE) {
-		assert(false && "Error: propagate_std_cell_sigs() -- invalid port directions in std cell.\n");
+		assert(false && "Error: expand_std_cell_sigs() -- invalid port directions in std cell.\n");
 		return;
 	}
 
@@ -26,7 +26,7 @@ void propagate_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
 		assert(num_scope_sigs == num_scope_ports);
 	}
 
-	if (DEBUG_PRINTS){ printf("STD cell module found, propagate all inputs to ouput (%s.%s).\n", ivl_scope_name(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig)); }
+	if (DEBUG_PRINTS){ printf("STD cell module found, expand all inputs to ouput (%s.%s).\n", ivl_scope_name(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig)); }
 
 	// Iterate over module input signals and connect all
 	// input signals to the aff_sig (output signal).

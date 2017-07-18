@@ -1,0 +1,17 @@
+digraph G {
+	"test.t1.output_cell" [shape=trapezium, label="test.t1.output_cell[7:0]"]; /* Output */
+	"test.t1.input_cell" [shape=invtrapezium, label="test.t1.input_cell[7:0]"]; /* Input */
+	"test.t1.input_cell" -> "test.t1.output_cell"[label="[7:0]->[7:0]"];
+	"test.o1" [shape=trapezium, label="test.o1[7:0]"]; /* Output */
+	"test.const_110011" [shape=rectangle, label="test.const_110011[5:0]"]; /* Constant */
+	"test.const_110011" -> "test.o1"[label="[5:0]->[5:0]"];
+	"test.internal" [shape=ellipse, label="test.internal[1:0]"];
+	"test.internal" -> "test.o1"[label="[1:0]->[7:6]"];
+	"test.i1_part" [shape=ellipse, label="test.i1_part[1:0]"];
+	"test.i1_part" -> "test.internal"[label="[1:0]->[1:0]"];
+	"test.i2" [shape=invtrapezium, label="test.i2[1:0]"]; /* Input */
+	"test.i2" -> "test.internal"[label="[1:0]->[1:0]"];
+	"test.i1" [shape=invtrapezium, label="test.i1[3:0]"]; /* Input */
+	"test.i1" -> "test.i1_part"[label="[3:2]->[1:0]"];
+	"test.o2" [shape=trapezium, label="test.o2[7:0]"]; /* Output */
+}

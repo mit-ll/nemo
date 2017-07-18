@@ -1,37 +1,31 @@
-BASE_IVERILOG_DIR=/Users/ti27457/Repos/nemo/iverilog
-EXEC_DIR=/Users/ti27457/Repos/nemo/iverilog/lib/ivl
+BASE_IVERILOG_DIR=/Users/ti27457/Repos/iverilog
+EXEC_DIR=/Users/ti27457/Repos/iverilog/lib/ivl
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 
-IDIR=../iverilog
+IDIR=../../iverilog
 CC=g++
-CFLAGS=-I$(IDIR) -fpic -std=gnu++0x
-# -Wall -Wextra -Wshadow -g -O2
+CFLAGS=-I$(IDIR) -fpic -std=gnu++0x -Wall -Wextra -Wshadow -g -O2
 
-LIBS=
 TGT=nemo
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 
-# TOP_MODULE=up_counter
-# TOP_MODULE=test
-TOP_MODULE=orpsoc_top
+TOP_MODULE=test
+# TOP_MODULE=orpsoc_top
 
-# DOT=up_counter
-# DOT=test
-DOT=orpsoc_top.express_100MHz
+DOT=test
+# DOT=orpsoc_top.express_100MHz
 
-# NETLIST=../up_counter.nl.v ../std_cell_defs.vm
-# NETLIST=../test.v
-NETLIST=../orpsoc_top.express_100MHz.nl.v ../std_cell_defs.vm
-
+NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
+# NETLIST=../netlists/orpsoc_top.express_100MHz.nl.v ../netlists/std_cell_defs.vm
 
 all: $(TGT) confs install
 
 $(TGT): $(OBJS)
-	$(CC) -undefined suppress -flat_namespace $(CFLAGS) $(LIBS) -o $@.tgt $^ 
+	$(CC) -undefined suppress -flat_namespace $(CFLAGS) -o $@.tgt $^ 
  
 %.o: %.cc
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -42,9 +36,9 @@ confs: ./generate_tgt_confs
 .PHONY: install uninstall run clean 
 
 install:
-	$(INSTALL_PROGRAM) ./$(TGT).tgt "$(EXEC_DIR)/$(TGT).tgt"
-	$(INSTALL_DATA) $(TGT).conf "$(EXEC_DIR)/$(TGT).conf"
-	$(INSTALL_DATA) $(TGT)-s.conf "$(EXEC_DIR)/$(TGT)-s.conf"
+	$(INSTALL_PROGRAM) ./$(TGT).tgt  "$(EXEC_DIR)/$(TGT).tgt"
+	$(INSTALL_DATA)    $(TGT).conf   "$(EXEC_DIR)/$(TGT).conf"
+	$(INSTALL_DATA)    $(TGT)-s.conf "$(EXEC_DIR)/$(TGT)-s.conf"
 
 uninstall:
 	rm -f $(EXEC_DIR)/$(TGT).tgt
@@ -52,11 +46,11 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot ../netlists/$(NETLIST)
+	$(BASE_IVERILOG_DIR)/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST)
 	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
 
 runsave:
-	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot ../netlists/$(NETLIST) > output.txt
+	$(BASE_IVERILOG_DIR)/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST) > output.txt
 	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
 
 clean:

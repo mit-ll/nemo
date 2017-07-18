@@ -2,34 +2,12 @@
 
 #include "nemo.h"
 
-static unsigned get_nexus_width(ivl_nexus_t nex) {
-	ivl_signal_t    sig = NULL;
-	ivl_net_const_t con = NULL;
-	ivl_nexus_ptr_t ptr = NULL;
-
-	for (unsigned idx = 0; idx < ivl_nexus_ptrs(nex); idx += 1) {
-		ptr = ivl_nexus_ptr(nex, idx);
-		sig = ivl_nexus_ptr_sig(ptr);
-		con = ivl_nexus_ptr_con(ptr);
-
-		if (sig) return ivl_signal_width(sig);
-		if (con) return ivl_const_width(con);
-	}
-
-	assert(false && "Unable to find nexus width");
-
-	return 0;
-}
-
-void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	// LPM Type
 	const ivl_lpm_type_t lpm_type = ivl_lpm_type(lpm);
 	
 	// Device Pointers
 	ivl_signal_t    sig;
-	ivl_net_const_t con;
-	ivl_net_logic_t prev_logic;
-	ivl_lpm_t       prev_lpm;
 
 	// Nexus Pointers
 	ivl_nexus_t     input_pin_nexus;
@@ -60,7 +38,7 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<
 				// every LPM device and constant. Therefore it is only necessary to look 
 				// for signal devices as inputs to the LPM, not any other devices
 				if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
-					// Do not propagate local IVL compiler generated signals
+					// Do not expand local IVL compiler generated signals
 					// unless they are outputs of constants
 					if (!is_ivl_generated_signal(sig) && !is_sig_explored(explored_sigs, sig)){
 						if (DEBUG_PRINTS){ printf("				input is a SIGNAL device (%s.%s).", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
@@ -97,7 +75,7 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<
 				// every LPM device and constant. Therefore it is only necessary to look 
 				// for signal devices as inputs to the LPM, not any other devices
 				if ((sig = ivl_nexus_ptr_sig(nexus_ptr))){
-					// Do not propagate local IVL compiler generated signals
+					// Do not expand local IVL compiler generated signals
 					// unless they are outputs of constants
 					if (!is_ivl_generated_signal(sig) && !is_sig_explored(explored_sigs, sig)){
 						// Nexus pointer points to a signal
@@ -130,7 +108,7 @@ void propagate_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<
 				for (unsigned int i = 0; i < ivl_nexus_ptrs(input_pin_nexus); i += 1){
 					nexus_ptr = ivl_nexus_ptr(input_pin_nexus, i);
 					if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
-						// Do not propagate local IVL compiler generated signals
+						// Do not expand local IVL compiler generated signals
 						// unless they are outputs of constants
 						if (!is_ivl_generated_signal(sig) && !is_sig_explored(explored_sigs, sig)){
 							// Nexus pointer points to a signal
