@@ -14,7 +14,7 @@
 #include <ivl_target.h>
 #include "nemo_dot_file.h"
 
-#define DEBUG_PRINTS 			 true
+#define DEBUG_PRINTS 			 false
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
 #define SEARCH_DEPTH 			 5

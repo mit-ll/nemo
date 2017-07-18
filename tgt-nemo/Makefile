@@ -46,11 +46,11 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	$(BASE_IVERILOG_DIR)/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST)
+	$(BASE_IVERILOG_DIR)/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST)
 	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
 
 runsave:
-	$(BASE_IVERILOG_DIR)/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST) > output.txt
+	$(BASE_IVERILOG_DIR)/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST) > output.txt
 	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
 
 clean:
