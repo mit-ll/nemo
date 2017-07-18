@@ -1,0 +1,11 @@
+`celldefine
+module test_cell(
+	output_cell,
+	input_cell,
+);
+
+	output [7:0] output_cell;
+	input  [7:0] input_cell;
+
+endmodule
+`endcelldefine
