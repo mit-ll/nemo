@@ -34,6 +34,7 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_
 		nex_ptr = ivl_nexus_ptr(nex, i);
 		assert(nex_ptr && "Error: expand_sig() -- nexus pointer is invalid.\n");
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))) {
+			if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 			// If the signal is different signal than itself --> add connection
 			if (aff_sig != sig) {
 				// Only expand the output signal of a child module to 
@@ -47,9 +48,13 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_
 					// outputs together.
 					if (ivl_scope_parent(sig_scope) == aff_sig_scope) {
 						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search);
+						printf("HERE 1\n");
 					}
 				} else if (is_sig1_output_and_sig2_not(aff_sig, sig) || !is_sig_output(aff_sig)){
 					connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search);
+					printf("HERE 2\n");
+				} else {
+					assert(false && "Error: expand_sig() -- invalid signal types.\n");
 				}
 			}
 		}

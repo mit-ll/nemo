@@ -19,7 +19,7 @@
 #define ENUMERATE_ENTIRE_CIRCUIT false
 #define SEARCH_DEPTH 			 5
 // #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]\\|supv"
-#define CRITICAL_SIG_REGEX "o"
+#define CRITICAL_SIG_REGEX "o1"
 
 using namespace std;
 

@@ -38,9 +38,15 @@ void find_signal_dependencies(ivl_signal_t base_sig, Dot_File& df, set<ivl_signa
 		aff_sig = *(critical_sigs.begin()); // get critical signal at beginning of queue/set
 		assert(ivl_signal_packed_dimensions(aff_sig) <= 1 && "ERROR: cannot support multi-dimensional vectors.\n");
 		
-		if ((depth_counter-- > 0) && !is_sig_explored(explored_signals, aff_sig) && !ENUMERATE_ENTIRE_CIRCUIT){
-			expand_sig(aff_sig, df, critical_sigs, explored_signals, true);
+		if (!ENUMERATE_ENTIRE_CIRCUIT && !is_sig_explored(explored_signals, aff_sig)){
+			// Do NOT enumerate the entire circuit
+			if (depth_counter-- > 0){
+				expand_sig(aff_sig, df, critical_sigs, explored_signals, true);
+			} else {
+				expand_sig(aff_sig, df, critical_sigs, explored_signals, false);
+			}
 		} else if (!is_sig_explored(explored_signals, aff_sig)) {
+			// Enumerate the entire circuit, i.e. every signal is critical
 			expand_sig(aff_sig, df, critical_sigs, explored_signals, false);
 		}
 
@@ -110,12 +116,16 @@ bool is_sig_explored(set<ivl_signal_t>& explored_signals, ivl_signal_t sig){
 // Returns true if the signal name found in the netlist 
 // matches the regex for security critical signals
 bool is_critical_sig(ivl_signal_t sig){
+	if (ENUMERATE_ENTIRE_CIRCUIT) {
+		return true;
+	}
+	
 	regex  critical_regex(CRITICAL_SIG_REGEX, regex::grep);
 	smatch matches;
 	string signal_base_name = string(ivl_signal_basename(sig));
 	
 	regex_search(signal_base_name, matches, critical_regex);
-	if (matches.size() > 0 || ENUMERATE_ENTIRE_CIRCUIT){
+	if (matches.size() > 0){
 		return true;
 	}
 	return false;
