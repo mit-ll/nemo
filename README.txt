@@ -1,28 +1,22 @@
-# Nemo
+#### Nemo ####
 
-Nemo is a custom Verilog compiler backend target module to be used along side the open source frontend Verilog compiler tool Icarus Verilog (http://iverilog.icarus.com/). Nemo allows an IC designer to create signal dependency graphs for any signal(s) in the design after it has been synthesized and mapped. Nemo takes as input a Verilog netlist (the output from a Verilog synthesis tool) and a Verilog description of the standard cell modules inputs and outputs. Nemo identifies critical signals in the input netlist based on a regular expression (defined in the "nemo.h" file) match and generates a signal dependency graph to identify which signals in a design have the potential to influence a critical signal. Nemo outputs the critical signal dependency graph in DOT graph description language file.
+Nemo is a custom Verilog compiler backend target module to be used along side the open source frontend Verilog compiler tool Icarus Verilog (http://iverilog.icarus.com/). Nemo allows an IC designer to create signal dependency graphs for any signal(s) in the design after it has been synthesized and mapped. 
 
+Nemo is initially invoked by the Icarus Verilog (IVL) frontend compiler and interacts with the data structures created by IVL via the IVL API defined by in the "ivl_target.h" header file. In order to use Nemo, one must first build/install IVL before building/installing Nemo. 
 
+Nemo takes as input a Verilog netlist (the output from a Verilog synthesis tool) and a Verilog netlist describing the standard cell modules used for synthesis. Nemo identifies critical signals in the input netlist based on a regular expression (defined in the "nemo.h" file) match and generates a signal dependency graph (to a graph depth also defined in the "nemo.h" file) to identify which signals in a design have the potential to influence a critical signal. Nemo outputs the critical signal dependency graph in DOT graph description language file.
 
-To make detecting distributed counter-registers practical, we use
-connection information from the circuit in question to limit the
-register combinations checked by our existing analysis flow. We
-represent connection information as a dataflow graph. Creating a
-dataflow graph for a circuit requires parsing the textual description
-of the circuit and connecting the individual assignments to form a
-graph. To maximize compatibility and reduce engineering effort, we use
-Icarus Verilog to parse circuits described in Verilog. Once parsed we
-walk the parse tree to build a dataflow graph for the
-circuit. Finally, we use the dataflow graph to determine all possible
-combinations of registers in a design. The resulting combinations feed
-directly into our existing flow for detecting coalesced counter
-registers.
+Example Nemo input files, a Verilog netlist and a standard cell Verilog netlist, are available in the "netlists/" directory. Example Nemo output files, a DOT file and a PDF visual representation of the DOT file, are available in the "graphs/" directory.
 
-Icarus Verilog supports adding functionality via modules called
-backends. Backends interact with Icarus Verilog via the backend dll
-API. Using the API means that we should be able to build our backend
-(tgt-ttb) independently from Icarus Verilog, but for now we need to
-compile our backend and Icarus Verilog together.
+#### Cloning Git Repositories ####
+
+1. Clone IVL Repo --> git clone
+1. Clone IVL Repo --> git clone
+
+# Building/Installing IVL
+
+# Building/Installing Nemo
+
 
 # Checkout
 
