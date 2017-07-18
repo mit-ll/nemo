@@ -27,8 +27,8 @@ file and a PDF visual representation of the DOT file, are available in the
 
 #### Cloning Git Repositories ####
 
-1. Clone IVL  Repo --> git clone git://github.com/steveicarus/iverilog.git 2.
-Clone Nemo Repo --> git clone
+1. Clone IVL  Repo --> git clone git://github.com/steveicarus/iverilog.git 
+2. Clone Nemo Repo --> git clone <LL Github Nemo Repo>
 
 #### Building/Installing IVL ####
 
@@ -36,14 +36,22 @@ Detailed instructions on this process can be found here:
 http://iverilog.wikia.com/wiki/Installation_Guide, but a summary is provided
 below.
 
-1. cd iverilog 2. sh autoconf.sh 3. ./configure --prefix=<full path of iverilog
-directory> 4. make install 5. cd ..
+1. cd iverilog
+2. comment out lines 1179, and 1182-1188 of IVL main.cc file to remove
+   frontend circuit optimzations
+3. sh autoconf.sh 
+4. ./configure --prefix=<full path of iverilog directory> 
+5. make install 
+6. cd ..
 
 #### Building/Installing Nemo ####
 
-1. cd nemo 2. edit Makefile variable "BASE_IVERILOG_DIR" (line 1) to be "<full
-path of iverilog directory>" 3. edit Makefile variable "EXEC_DIR" (line 1) to be
-"<full path of iverilog directory>/lib/ivl" 4. make all
+1. cd nemo
+2. edit Makefile variable "BASE_IVERILOG_DIR" (line 1) to be "<full
+path of iverilog directory>" 
+3. edit Makefile variable "EXEC_DIR" (line 1) to be
+"<full path of iverilog directory>/lib/ivl" 
+4. make all
 
 
 #### Running Nemo on Sample Netlist ####
