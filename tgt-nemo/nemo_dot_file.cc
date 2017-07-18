@@ -2,9 +2,7 @@
 #include <string>
 #include <algorithm>
 
-#include <ivl_target.h>
 #include "nemo.h"
-#include "nemo_dot_file.h"
 
 using namespace std;
 

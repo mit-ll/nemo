@@ -1,6 +1,5 @@
 #include <cassert>
 
-#include "ivl_target.h"
 #include "nemo.h"
 
 void propagate_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {

@@ -52,12 +52,12 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST)
-	dot $(DOT).dot -Tpdf -o $(DOT).pdf
+	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot ../netlists/$(NETLIST)
+	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
 
 runsave:
-	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o $(DOT).dot $(NETLIST) > output.txt
-	dot $(DOT).dot -Tpdf -o $(DOT).pdf
+	../iverilog/bin/iverilog -v -gspecify -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot ../netlists/$(NETLIST) > output.txt
+	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
 
 clean:
 	rm -f *.o
@@ -65,7 +65,7 @@ clean:
 	rm -f *.conf
 
 cleandot:
-	rm -f *.dot
-	rm -f *.pdf
+	rm -f ../graphs/*.dot
+	rm -f ../graphs/*.pdf
 
 cleanall: clean uninstall

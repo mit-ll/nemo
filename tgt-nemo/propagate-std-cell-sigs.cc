@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "ivl_target.h"
 #include "nemo.h"
 
 void propagate_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){

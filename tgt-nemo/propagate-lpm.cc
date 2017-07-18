@@ -1,6 +1,5 @@
 #include <cassert>
 
-#include "ivl_target.h"
 #include "nemo.h"
 
 static unsigned get_nexus_width(ivl_nexus_t nex) {

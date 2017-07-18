@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "ivl_target.h"
 #include "nemo.h"
 
 void propagate_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
