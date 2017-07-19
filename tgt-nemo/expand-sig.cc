@@ -25,10 +25,10 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 	// If the module (IVL scope) is a std cell, no signals
 	// will be connected in the std cell template verilog file
 	// so expand all inputs to all outputs.
-	if (ivl_scope_is_cell(ivl_signal_scope(aff_sig))){
+	if (ivl_scope_is_cell(ivl_signal_scope(aff_sig)) && ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT){
 		expand_std_cell_sigs(aff_sig, df, sigs_to_expand, explored_sigs, expand_search);
 		return;
-	} 
+	}
 
 	// Iterate through the pointers in a given nexus
 	for (unsigned int i = 0; i < ivl_nexus_ptrs(nex); i++) {
@@ -37,7 +37,6 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))) {
 			// If the signal is different signal than itself --> add connection
 			if (aff_sig != sig) {
-				// if (DEBUG_PRINTS){ printf("		input is a SIGNAL device (%s.%s).\n", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 				// aff_sig direction is OUTPUT; sig direction is OUTPUT
 				if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT){
 					// Only connect the output signal of a child module to 

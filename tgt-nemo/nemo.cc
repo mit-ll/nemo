@@ -8,13 +8,6 @@
 
 #include "nemo.h"
 
-void order_critical_signals(vector<ivl_signal_t>& critical_sigs){
-	// for (unsigned i = 0; i < critical_sigs.size(); i++){
-	// 	critical_sigs[i]
-	// }
-	return;
-}
-
 void find_all_signal_dependencies(vector<ivl_signal_t>& critical_sigs, Dot_File& df){
 	set<ivl_signal_t> expanded_signals;
 
@@ -74,14 +67,14 @@ void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_s
 void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vector<ivl_signal_t>& critical_sigs){
 	unsigned          num_critical_signals_found = 0;
 
-	printf("\nNumber of Root Scopes: %d\n\n", num_root_scopes);
+	printf("\nNumber of root scopes: %d\n\n", num_root_scopes);
 
 	for (unsigned i = 0; i < num_root_scopes; i++) {
-		printf("Critical Signals in Scope %s:\n", ivl_scope_basename(root_scopes[i]));
+		printf("Critical signals in root scope %s:\n", ivl_scope_basename(root_scopes[i]));
 		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, critical_sigs);
 	}
 
-	printf("\nNumber of Critical Signals Found: %d\n\n", num_critical_signals_found);
+	printf("\nNumber of critical signals found: %d\n\n", num_critical_signals_found);
 }
 
 // Recurse through IVL scope objects (in this case only modules)
@@ -296,9 +289,6 @@ int target_design(ivl_design_t des) {
 	// Find all critical signals and dependencies in the design
 	find_critical_sigs(roots, num_roots, critical_sigs);
 
-	// Order critical sigs according to heirarchy and direction
-	order_critical_signals(critical_sigs);
-
 	// Find signal dependencies of critical sigs
 	find_all_signal_dependencies(critical_sigs, df);
 
@@ -307,7 +297,7 @@ int target_design(ivl_design_t des) {
 
 	// Stop timer
 	duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
-	printf("\nExecution Time: %f (s)\n\n", duration);
+	printf("Execution Time: %f (s)\n\n", duration);
 
 	return 0;
 }

@@ -5,13 +5,6 @@
 #include "nemo.h"
 
 void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search){
-	// If aff_signal is an input to the std cell module stub, return
-	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT){
-		return;
-	} else if (ivl_signal_port(aff_sig) == IVL_SIP_INOUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE) {
-		assert(false && "Error <expand_std_cell_sigs()>: invalid (inout) port directions in std cell.\n");
-	}
-
 	ivl_signal_t curr_input_sig  = NULL;
 	ivl_scope_t  curr_scope      = ivl_signal_scope(aff_sig);
 	unsigned     num_scope_sigs  = ivl_scope_sigs(ivl_signal_scope(aff_sig));

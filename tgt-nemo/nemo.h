@@ -14,16 +14,15 @@
 #include <vector>
 #include "nemo_dot_file.h"
 
-#define DEBUG_PRINTS 			 true
+#define DEBUG_PRINTS 			 false
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
 #define SEARCH_DEPTH 			 3
 // #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]\\|supv"
-#define CRITICAL_SIG_REGEX "supv"
+#define CRITICAL_SIG_REGEX "o"
 
 using namespace std;
 
-void order_critical_signals(vector<ivl_signal_t>& critical_sigs);
 void find_all_signal_dependencies(vector<ivl_signal_t>& critical_sigs, Dot_File& df);
 void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals);
 void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vector<ivl_signal_t>& critical_sigs);
