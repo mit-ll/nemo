@@ -26,7 +26,7 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_
 	// will be connected in the std cell template verilog file
 	// so expand all inputs to all outputs.
 	if (ivl_scope_is_cell(ivl_signal_scope(aff_sig))){
-		expand_std_cell_sigs(aff_sig, df);
+		expand_std_cell_sigs(aff_sig, df, critical_sigs, explored_sigs, expand_search);
 	} 
 
 	// Iterate through the pointers in a given nexus
@@ -34,27 +34,79 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_
 		nex_ptr = ivl_nexus_ptr(nex, i);
 		assert(nex_ptr && "Error: expand_sig() -- nexus pointer is invalid.\n");
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))) {
-			if (DEBUG_PRINTS){ printf("	input %d is a SIGNAL device (%s.%s).\n", i, ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 			// If the signal is different signal than itself --> add connection
 			if (aff_sig != sig) {
-				// Only expand the output signal of a child module to 
-				// the output of a parent module.
-				if (are_both_signals_outputs(aff_sig, sig)) {
+				if (DEBUG_PRINTS){ printf("		input is a SIGNAL device (%s.%s).\n", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
+				// aff_sig direction is OUTPUT; sig direction is OUTPUT
+				if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT){
+					// Only connect the output signal of a child module to 
+					// the output of a parent module. Otherwise, do not connect 
+					// two outputs together.
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
 					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
 
-					// Only connect the output signal of a child module to 
-					// the output of a parent module. Do not connect two 
-					// outputs together.
 					if (ivl_scope_parent(sig_scope) == aff_sig_scope) {
-						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search);
-						printf("HERE 1\n");
+						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);
 					}
-				} else if (is_sig1_output_and_sig2_not(aff_sig, sig) || !is_sig_output(aff_sig)){
-					connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search);
-					printf("HERE 2\n");
-				} else {
-					assert(false && "Error: expand_sig() -- invalid signal types.\n");
+				}
+				// aff_sig direction is OUTPUT; sig direction is INPUT
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_INPUT){
+					// Only connect an input and output signal if they are
+					// both contained in the same module
+					if (ivl_signal_scope(aff_sig) == ivl_signal_scope(sig)){
+						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);	
+					}
+				}
+				// aff_sig direction is OUTPUT; sig direction is NONE
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_NONE){
+					// Only connect a regular signal to an output if
+					// they are in the same module.
+					if (ivl_signal_scope(aff_sig) == ivl_signal_scope(sig)){
+						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);
+					}
+				}
+				// aff_sig direction is INPUT; sig direction is OUTPUT
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT){
+					// Only connect an output and input signal if they are
+					// contained in different modules
+					if (ivl_signal_scope(aff_sig) != ivl_signal_scope(sig)){
+						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);	
+					}
+				}
+				// aff_sig direction is INPUT; sig direction is INPUT
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT && ivl_signal_port(sig) == IVL_SIP_INPUT){
+					// Only connect an input signal of a parent module to 
+					// the input signal of a child module. Otherwise, do not 
+					// connect two inputs together.
+					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
+					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
+
+					if (ivl_scope_parent(aff_sig_scope) == sig_scope) {
+						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);
+					}
+				}
+				// aff_sig direction is INPUT; sig direction is NONE
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT && ivl_signal_port(sig) == IVL_SIP_NONE){
+					connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);
+				}
+				// aff_sig direction is NONE; sig direction is OUTPUT
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_NONE && ivl_signal_port(sig) == IVL_SIP_OUTPUT){
+					if (ivl_signal_scope(aff_sig) != ivl_signal_scope(sig)){
+						connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, true);	
+					}
+				}
+				// aff_sig direction is NONE; sig direction is INPUT
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_NONE && ivl_signal_port(sig) == IVL_SIP_INPUT){
+					// do not make this connection, does not make sense
+					continue;
+				}
+				// aff_sig direction is NONE; sig direction is NONE
+				else if (ivl_signal_port(aff_sig) == IVL_SIP_NONE && ivl_signal_port(sig) == IVL_SIP_NONE){
+					connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, false);
+				}
+				// Raise error if none of these conditions hold
+				else {
+					assert(false && "Error: expand_sig() -- invalid signal directions to connect.\n");
 				}
 			}
 		}

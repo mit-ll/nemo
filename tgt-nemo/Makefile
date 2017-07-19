@@ -13,14 +13,11 @@ TGT=nemo
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 
-TOP_MODULE=test
-# TOP_MODULE=orpsoc_top
+# TOP_MODULE=test
+TOP_MODULE=orpsoc_top
 
-DOT=test
-# DOT=orpsoc_top.express_100MHz
-
-NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
-# NETLIST=../netlists/orpsoc_top.express_100MHz.nl.v ../netlists/std_cell_defs.vm
+# NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
+NETLIST=../netlists/orpsoc_top.express_100MHz.nl.v ../netlists/std_cell_defs.vm
 
 all: $(TGT) confs install
 
@@ -46,12 +43,12 @@ uninstall:
 	rm -f $(EXEC_DIR)/$(TGT)-s.conf
 
 run:
-	$(BASE_IVERILOG_DIR)/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST)
-	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
+	$(BASE_IVERILOG_DIR)/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o ../graphs/$(TOP_MODULE).dot $(NETLIST)
+	dot ../graphs/$(TOP_MODULE).dot -Tpdf -o ../graphs/$(TOP_MODULE).pdf
 
 runsave:
-	$(BASE_IVERILOG_DIR)/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o ../graphs/$(DOT).dot $(NETLIST) > output.txt
-	dot ../graphs/$(DOT).dot -Tpdf -o ../graphs/$(DOT).pdf
+	$(BASE_IVERILOG_DIR)/bin/iverilog -v -t nemo -s $(TOP_MODULE) -o ../graphs/$(TOP_MODULE).dot $(NETLIST) > output.txt
+	dot ../graphs/$(TOP_MODULE).dot -Tpdf -o ../graphs/$(TOP_MODULE).pdf
 
 clean:
 	rm -f *.o

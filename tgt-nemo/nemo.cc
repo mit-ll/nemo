@@ -119,7 +119,7 @@ bool is_critical_sig(ivl_signal_t sig){
 	if (ENUMERATE_ENTIRE_CIRCUIT) {
 		return true;
 	}
-	
+
 	regex  critical_regex(CRITICAL_SIG_REGEX, regex::grep);
 	smatch matches;
 	string signal_base_name = string(ivl_signal_basename(sig));
@@ -188,41 +188,67 @@ ivl_net_const_t is_const_local_sig(ivl_signal_t sig){
 	return con;
 }
 
-bool is_sig_output(ivl_signal_t sig){
-	if (ivl_signal_port(sig) == IVL_SIP_OUTPUT || ivl_signal_port(sig) == IVL_SIP_INOUT) {
+// bool is_sig_output(ivl_signal_t sig){
+// 	if (ivl_signal_port(sig) == IVL_SIP_OUTPUT || ivl_signal_port(sig) == IVL_SIP_INOUT) {
+// 		return true;
+// 	} else {
+// 		return false;
+// 	}
+// }
+
+// bool are_both_signals_outputs(ivl_signal_t sig1, ivl_signal_t sig2) {
+// 	if (is_sig_output(sig1) && is_sig_output(sig2)) {
+// 		return true;
+// 	} else {
+// 		return false;
+// 	}
+// }
+
+// bool is_sig1_output_and_sig2_not(ivl_signal_t sig1, ivl_signal_t sig2) {
+// 	if (is_sig_output(sig1) && !is_sig_output(sig2)) {
+// 		return true;
+// 	} else {
+// 		return false;
+// 	}
+// }
+
+// bool is_sig1_sig2_same_scope(ivl_signal_t sig1, ivl_signal_t sig2){	
+// 	if (ivl_signal_scope(sig1) == ivl_signal_scope(sig2)){
+// 		return true;
+// 	}
+	
+// 	return false;
+// }
+
+bool is_sig1_higher_or_equal_than_sig2(ivl_signal_t sig1, ivl_signal_t sig2){
+	ivl_scope_t sig1_scope = ivl_signal_scope(sig1);
+	ivl_scope_t sig2_scope = ivl_signal_scope(sig2);
+	
+	// if scope is the same, return false
+	if (sig1_scope == sig2_scope){
 		return true;
-	} else {
-		return false;
 	}
+
+	while ((sig2_scope = ivl_scope_parent(sig2_scope))) {
+		if (sig1_scope == sig2_scope){
+			return true;
+		}
+	}
+
+	return false;
 }
 
-bool are_both_signals_outputs(ivl_signal_t sig1, ivl_signal_t sig2) {
-	if (is_sig_output(sig1) && is_sig_output(sig2)) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool is_sig1_output_and_sig2_not(ivl_signal_t sig1, ivl_signal_t sig2) {
-	if (is_sig_output(sig1) && !is_sig_output(sig2)) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-void connect_signals(ivl_signal_t aff_sig, ivl_signal_t sig, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, Dot_File& df, bool expand_search) {
+void connect_signals(ivl_signal_t aff_sig, ivl_signal_t sig, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, Dot_File& df, bool expand_search, bool force_connection) {
 	pair<set<ivl_signal_t>::iterator, bool> insert_ret;
 	
 	// Do not connect local IVL compiler generated signals
-	if (!is_ivl_generated_signal(sig) && !is_sig_explored(explored_sigs, sig)) {
+	if (!is_ivl_generated_signal(sig) && (!is_sig_explored(explored_sigs, sig) || force_connection)) {
 		if (DEBUG_PRINTS){ printf("	input is a SIGNAL device (%s.%s).", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 		df.add_connection(aff_sig, sig);
 
 		// Only expand search to NON IVL generated signals,
 		// excluding signals generated  by IVL from constants. 
-		if (expand_search && !ivl_signal_local(sig)){
+		if (expand_search && !ivl_signal_local(sig) && !is_sig_explored(explored_sigs, sig)){
 			insert_ret = critical_sigs.insert(sig);
 			if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
 		}

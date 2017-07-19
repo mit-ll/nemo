@@ -4,7 +4,7 @@
 
 #include "nemo.h"
 
-void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
+void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search){
 	// If aff_signal is an input to the std cell module stub, return
 	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE){
 		return;
@@ -17,6 +17,8 @@ void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
 	ivl_scope_t  curr_scope      = ivl_signal_scope(aff_sig);
 	unsigned     num_scope_sigs  = ivl_scope_sigs(ivl_signal_scope(aff_sig));
 	unsigned 	 num_scope_ports = ivl_scope_ports(ivl_signal_scope(aff_sig));
+
+	pair<set<ivl_signal_t>::iterator, bool> insert_ret;
 
 	// Ensure number of signals is equal to the number of ports,
 	// i.e. the std cell module definition is just a template of
@@ -33,8 +35,16 @@ void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df){
 	for (unsigned i = 0; i < num_scope_sigs; i++) {
 		curr_input_sig = ivl_scope_sig(curr_scope, i);
 		if (ivl_signal_port(curr_input_sig) == IVL_SIP_INPUT || ivl_signal_port(curr_input_sig) == IVL_SIP_INOUT) {
-			if (DEBUG_PRINTS){ printf("		input %d is signal %s.%s\n", i, ivl_scope_name(ivl_signal_scope(curr_input_sig)), ivl_signal_basename(curr_input_sig)); }
+			if (DEBUG_PRINTS){ printf("		input %d is a SIGNAL device (%s.%s).", i, ivl_scope_name(ivl_signal_scope(curr_input_sig)), ivl_signal_basename(curr_input_sig)); }
 			df.add_connection(aff_sig, curr_input_sig);
+
+			// Only expand search to NON IVL generated signals,
+			// excluding signals generated  by IVL from constants. 
+			if (expand_search && !ivl_signal_local(curr_input_sig) && !is_sig_explored(explored_sigs, curr_input_sig)){
+				insert_ret = critical_sigs.insert(curr_input_sig);
+				if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
+			}
+			if (DEBUG_PRINTS){ printf("\n"); }
 		}
 	}
 }
