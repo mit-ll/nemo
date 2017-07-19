@@ -2,7 +2,7 @@
 
 #include "nemo.h"
 
-void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	unsigned num_input_pins = ivl_logic_pins(logic);
 	
 	// Device Pointers
@@ -32,7 +32,7 @@ void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df,
 			if ((sig = ivl_nexus_ptr_sig(nexus_ptr))) {
 				// Do not expand local IVL compiler generated signals
 				// unless they are outputs of constants
-				connect_signals(aff_sig, sig, critical_sigs, explored_sigs, df, expand_search, true);
+				connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
 			}
 			else if ((prev_logic = ivl_nexus_ptr_log(nexus_ptr)) != logic){
 				assert(!prev_logic && "Logic unit connected directly to logic unit\n");

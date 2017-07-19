@@ -2,7 +2,7 @@
 
 #include "nemo.h"
 
-void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	// LPM Type
 	const ivl_lpm_type_t lpm_type = ivl_lpm_type(lpm);
 	
@@ -43,8 +43,8 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 					if (!is_ivl_generated_signal(sig)){
 						if (DEBUG_PRINTS){ printf("				input is a SIGNAL device (%s.%s).", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm));
-						if (expand_search && !ivl_signal_local(sig) && !is_sig_explored(explored_sigs, sig)){
-							insert_ret = critical_sigs.insert(sig);
+						if (expand_search && !ivl_signal_local(sig) && !is_sig_expanded(explored_sigs, sig)){
+							insert_ret = sigs_to_expand.insert(sig);
 							if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
 						}
 						if (DEBUG_PRINTS){ printf("\n"); }
@@ -81,8 +81,8 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 						// Nexus pointer points to a signal
 						if (DEBUG_PRINTS){ printf("				input is a SIGNAL device (%s.%s).", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 						df.add_connection(aff_sig, (ivl_lpm_base(lpm) + ivl_lpm_width(lpm) - 1), ivl_lpm_base(lpm), sig);
-						if (expand_search && !ivl_signal_local(sig) && !is_sig_explored(explored_sigs, sig)){
-							insert_ret = critical_sigs.insert(sig);
+						if (expand_search && !ivl_signal_local(sig) && !is_sig_expanded(explored_sigs, sig)){
+							insert_ret = sigs_to_expand.insert(sig);
 							if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
 						}
 						if (DEBUG_PRINTS){ printf("\n"); }
@@ -114,8 +114,8 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 							// Nexus pointer points to a signal
 							if (DEBUG_PRINTS){ printf("				input is a SIGNAL device (%s.%s).", ivl_scope_name(ivl_signal_scope(sig)), ivl_signal_basename(sig)); }
 							df.add_connection(aff_sig, (curr_lsb + ivl_signal_width(sig) - 1), curr_lsb, sig);
-							if (expand_search && !ivl_signal_local(sig) && !is_sig_explored(explored_sigs, sig)){
-								insert_ret = critical_sigs.insert(sig);
+							if (expand_search && !ivl_signal_local(sig) && !is_sig_expanded(explored_sigs, sig)){
+								insert_ret = sigs_to_expand.insert(sig);
 								if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
 							}
 							if (DEBUG_PRINTS){ printf("\n"); }

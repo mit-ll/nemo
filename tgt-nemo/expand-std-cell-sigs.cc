@@ -4,13 +4,12 @@
 
 #include "nemo.h"
 
-void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& critical_sigs, set<ivl_signal_t>& explored_sigs, bool expand_search){
+void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search){
 	// If aff_signal is an input to the std cell module stub, return
-	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE){
+	if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT){
 		return;
 	} else if (ivl_signal_port(aff_sig) == IVL_SIP_INOUT || ivl_signal_port(aff_sig) == IVL_SIP_NONE) {
-		assert(false && "Error: expand_std_cell_sigs() -- invalid port directions in std cell.\n");
-		return;
+		assert(false && "Error <expand_std_cell_sigs()>: invalid (inout) port directions in std cell.\n");
 	}
 
 	ivl_signal_t curr_input_sig  = NULL;
@@ -34,17 +33,19 @@ void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>&
 	// input signals to the aff_sig (output signal).
 	for (unsigned i = 0; i < num_scope_sigs; i++) {
 		curr_input_sig = ivl_scope_sig(curr_scope, i);
-		if (ivl_signal_port(curr_input_sig) == IVL_SIP_INPUT || ivl_signal_port(curr_input_sig) == IVL_SIP_INOUT) {
+		if (ivl_signal_port(curr_input_sig) == IVL_SIP_INPUT) {
 			if (DEBUG_PRINTS){ printf("		input %d is a SIGNAL device (%s.%s).", i, ivl_scope_name(ivl_signal_scope(curr_input_sig)), ivl_signal_basename(curr_input_sig)); }
 			df.add_connection(aff_sig, curr_input_sig);
 
 			// Only expand search to NON IVL generated signals,
 			// excluding signals generated  by IVL from constants. 
-			if (expand_search && !ivl_signal_local(curr_input_sig) && !is_sig_explored(explored_sigs, curr_input_sig)){
-				insert_ret = critical_sigs.insert(curr_input_sig);
+			if (expand_search && !ivl_signal_local(curr_input_sig) && !is_sig_expanded(explored_sigs, curr_input_sig)){
+				insert_ret = sigs_to_expand.insert(curr_input_sig);
 				if (insert_ret.second && DEBUG_PRINTS){ printf(" Expanded."); }
 			}
 			if (DEBUG_PRINTS){ printf("\n"); }
+		} else if (ivl_signal_port(curr_input_sig) == IVL_SIP_INOUT || ivl_signal_port(curr_input_sig) == IVL_SIP_NONE) {
+			printf("Warning <expand_std_cell_sigs()>: ignoring inout or none type signals.\n");
 		}
 	}
 }

@@ -6,10 +6,10 @@ the open source frontend Verilog compiler tool Icarus Verilog
 dependency graphs for any signal(s) in the design after it has been synthesized
 and mapped.
 
-Nemo is initially invoked by the Icarus Verilog (IVL) frontend compiler and
-interacts with the data structures created by IVL via the IVL API defined by in
-the "ivl_target.h" header file. In order to use Nemo, one must first
-build/install IVL before building/installing Nemo.
+In order for Nemo to be usefull, it must be invoked by the Icarus Verilog (IVL) 
+frontend compiler and interacts with the data structures created by IVL via the
+IVL API defined by in the "ivl_target.h" header file. In order to use Nemo, one
+must first build/install IVL before building/installing Nemo.
 
 Nemo takes as input a Verilog netlist (the output from a Verilog synthesis tool)
 and a Verilog netlist describing the standard cell modules used for synthesis.
@@ -47,11 +47,13 @@ below.
 #### Building/Installing Nemo ####
 
 1. cd nemo
-2. edit Makefile variable "BASE_IVERILOG_DIR" (line 1) to be "<full
+2. cd tgt-nemo
+3. edit Makefile variable "BASE_IVERILOG_DIR" (line 1) to be "<full
 path of iverilog directory>" 
-3. edit Makefile variable "EXEC_DIR" (line 1) to be
+4. edit Makefile variable "EXEC_DIR" (line 1) to be
 "<full path of iverilog directory>/lib/ivl" 
-4. make all
+5. add "#include <ivl_target.h>" between lines 14 and 15 of the nemo.h file 
+5. make all
 
 
 #### Running Nemo on Sample Netlist ####
