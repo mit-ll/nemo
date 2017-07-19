@@ -13,9 +13,11 @@ TGT=nemo
 SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 
-TOP_MODULE=test
+# TOP_MODULE=test
+TOP_MODULE=orpsoc_top
 
-NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
+# NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
+NETLIST=../netlists/orpsoc_top.express_100MHz.nl.v ../netlists/std_cell_defs.vm
 
 all: $(TGT) confs install
 

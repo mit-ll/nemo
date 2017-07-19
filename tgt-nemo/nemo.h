@@ -12,14 +12,15 @@
 
 #include <set>
 #include <vector>
+#include <ivl_target.h>
 #include "nemo_dot_file.h"
 
 #define DEBUG_PRINTS 			 false
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
-#define SEARCH_DEPTH 			 3
-// #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]\\|supv"
-#define CRITICAL_SIG_REGEX "o"
+#define SEARCH_DEPTH 			 5
+// #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]|supv"
+#define CRITICAL_SIG_REGEX "sr"
 
 using namespace std;
 
