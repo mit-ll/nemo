@@ -17,7 +17,7 @@ OBJS=$(SRCS:.cc=.o)
 TOP_MODULE=orpsoc_top
 
 # NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
-NETLIST=../netlists/orpsoc_top.express_100MHz.nl.v ../netlists/std_cell_defs.vm
+NETLIST=../netlists/orpsoc_top.high_200MHz.nl.v ../netlists/std_cell_defs.vm
 
 all: $(TGT) confs install
 

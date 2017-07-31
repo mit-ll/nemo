@@ -70,7 +70,9 @@ void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vect
 	printf("\nNumber of root scopes: %d\n\n", num_root_scopes);
 
 	for (unsigned i = 0; i < num_root_scopes; i++) {
-		printf("Critical signals in root scope %s:\n", ivl_scope_basename(root_scopes[i]));
+		if (!ENUMERATE_ENTIRE_CIRCUIT){
+			printf("Critical signals in root scope %s:\n", ivl_scope_basename(root_scopes[i]));
+		}
 		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, critical_sigs);
 	}
 
@@ -109,8 +111,10 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vecto
 					assert(false && "ERROR: Unsupported number of dimensions");
 				}
 				(*num_sigs_found)++;
+				if (!ENUMERATE_ENTIRE_CIRCUIT){
+					print_signal_info(current_ivl_signal);
+				}
 				// Find critical signal dependencies
-				print_signal_info(current_ivl_signal);
 				critical_sigs.push_back(current_ivl_signal);
 			}
 		}
@@ -118,7 +122,7 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vecto
 }
 
 // Returns true if the signal has already been explored,
-// i.e. the signal has already been passed to propa
+// i.e. the signal has already been passed to expand_sig().
 bool is_sig_expanded(set<ivl_signal_t>& explored_signals, ivl_signal_t sig){
 	return (explored_signals.find(sig) != explored_signals.end());
 }
