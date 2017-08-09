@@ -60,7 +60,7 @@ path of iverilog directory>"
 
 -run "make run" inside tgtnemo directory
 
-- or -
+--or--
 
 -run "<path to IVL>/iverilog v t nemo s <top module name> o <output DOT file
 -name> <netlist> <std cell netlist>"
