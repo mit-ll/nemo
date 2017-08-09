@@ -1,4 +1,4 @@
-#### Nemo ####
+# Nemo
 
 Nemo is a custom Verilog compiler backend target module to be used along side
 the open source frontend Verilog compiler tool Icarus Verilog
@@ -25,12 +25,12 @@ are available in the "netlists/" directory. Example Nemo output files, a DOT
 file and a PDF visual representation of the DOT file, are available in the
 "graphs/" directory.
 
-#### Cloning Git Repositories ####
+## Cloning Git Repositories
 
 1. Clone IVL  Repo --> git clone git://github.com/steveicarus/iverilog.git 
 2. Clone Nemo Repo --> git clone <LL Github Nemo Repo>
 
-#### Building/Installing IVL ####
+## Building/Installing IVL
 
 Detailed instructions on this process can be found here:
 http://iverilog.wikia.com/wiki/Installation_Guide, but a summary is provided
@@ -44,7 +44,7 @@ below.
 5. make install 
 6. cd ..
 
-#### Building/Installing Nemo ####
+## Building/Installing Nemo
 
 1. cd nemo
 2. cd tgt-nemo
@@ -56,7 +56,7 @@ path of iverilog directory>"
 5. make all
 
 
-#### Running Nemo on Sample Netlist ####
+## Running Nemo on Sample Netlist
 
 -run "make run" inside tgtnemo directory
 
@@ -65,7 +65,7 @@ path of iverilog directory>"
 -run "<path to IVL>/iverilog v t nemo s <top module name> o <output DOT file
 -name> <netlist> <std cell netlist>"
 
-#### Nemo Configurations ####
+## Nemo Configurations
 
 There are several parameters that can be configured withing Nemo to achieve
 various goals. All #define configurations are located in the "nemo.h" file. The
@@ -79,25 +79,47 @@ following configurations are:
 											   dependencies for entire circuit 
 4. SEARCH_DEPTH             < unsigned int > - depth to search for signal 
 											   dependencies
-											   
-####################################################################################
-# DISTRIBUTION STATEMENT A. Approved for public release: distribution unlimited.
-# 
-# This material is based upon work supported by the Assistant Secretary of Defense
-# for Research and Engineering under Air Force Contract No. FA8721-05-C-0002
-# and/or FA8702-15-D-0001. Any opinions, findings, conclusions or recommendations
-# expressed in this material are those of the author(s) and do not necessarily
-# reflect the views of the Assistant Secretary of Defense for Research and
-# Engineering.
-#
-# © 2017 Massachusetts Institute of Technology.
-#
-# The software/firmware is provided to you on an As-Is basis
-#
-# Delivered to the U.S. Government with Unlimited Rights, as defined in DFARS Part
-# 252.227-7013 or 7014 (Feb 2014). Notwithstanding any copyright notice, U.S.
-# Government rights in this work are defined by DFARS 252.227-7013 or DFARS
-# 252.227-7014 as detailed above. Use of this work other than as specifically
-# authorized by the U.S. Government may violate any copyrights that exist in this
-# work.
-####################################################################################
+## License
+Copyright (c) 2017, Massachusetts Institute of Technology.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+DISTRIBUTION STATEMENT A. Approved for public release: distribution unlimited.
+
+This material is based upon work supported by the Assistant Secretary of Defense
+for Research and Engineering under Air Force Contract No. FA8721-05-C-0002
+and/or FA8702-15-D-0001. Any opinions, findings, conclusions or recommendations
+expressed in this material are those of the author(s) and do not necessarily
+reflect the views of the Assistant Secretary of Defense for Research and
+Engineering.
+
+© 2017 Massachusetts Institute of Technology.
+
+The software/firmware is provided to you on an As-Is basis
+
+Delivered to the U.S. Government with Unlimited Rights, as defined in DFARS Part
+252.227-7013 or 7014 (Feb 2014). Notwithstanding any copyright notice, U.S.
+Government rights in this work are defined by DFARS 252.227-7013 or DFARS
+252.227-7014 as detailed above. Use of this work other than as specifically
+authorized by the U.S. Government may violate any copyrights that exist in this
+work.
