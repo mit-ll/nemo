@@ -14,10 +14,10 @@ SRCS=$(wildcard *.cc)
 OBJS=$(SRCS:.cc=.o)
 
 # TOP_MODULE=test
-TOP_MODULE=orpsoc_top
+TOP_MODULE=MAL_TOP
 
 # NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
-NETLIST=../netlists/orpsoc_top.high_200MHz.nl.v ../netlists/std_cell_defs.vm
+NETLIST=../netlists/MAL_TOP.nl.v ../netlists/std_cell_defs_45nm.vm ../netlists/io_cell_defs_45nm.vm
 
 all: $(TGT) confs install
 
