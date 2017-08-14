@@ -36,7 +36,7 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 		assert(nex_ptr && "Error: expand_sig() -- nexus pointer is invalid.\n");
 		if ((sig = ivl_nexus_ptr_sig(nex_ptr))) {
 			// If the signal is different signal than itself --> add connection
-			if (aff_sig != sig) {
+			if (aff_sig != sig && !is_ivl_generated_signal(sig)) {
 				// aff_sig direction is OUTPUT; sig direction is OUTPUT
 				if (ivl_signal_port(aff_sig) == IVL_SIP_OUTPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT){
 					// Only connect the output signal of a child module to 
@@ -45,10 +45,11 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
 					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
 
-					if (ivl_scope_parent(sig_scope) == aff_sig_scope) {
+					if (is_child_of_parent_module(sig_scope, aff_sig_scope)){
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
 					} else {
 						printf("Warning <expand_sig()>: Ignoring connection of signal directions (output->output).\n");
+						if (DEBUG_CONNECTION_DIRS_WARNING){ printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig), ivl_scope_basename(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig)); }
 					}
 				}
 				// aff_sig direction is OUTPUT; sig direction is INPUT
@@ -57,8 +58,9 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					// both contained in the same module
 					if (ivl_signal_scope(aff_sig) == ivl_signal_scope(sig)){
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);	
-					} else {
-						printf("Warning <expand_sig()>: Ignoring connection of signal directions (input->output).\n");
+					} else if (DEBUG_CONNECTION_DIRS_INFO){
+						printf("Info <expand_sig()>: Ignoring connection of signal directions (input->output).\n");
+						printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig), ivl_scope_basename(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig));
 					}
 				}
 				// aff_sig direction is OUTPUT; sig direction is NONE
@@ -67,18 +69,21 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					// they are in the same module.
 					if (ivl_signal_scope(aff_sig) == ivl_signal_scope(sig)){
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
-					} else {
-						printf("Warning <expand_sig()>: Ignoring connection of signal directions (none->output).\n");
+					} else if (DEBUG_CONNECTION_DIRS_INFO){
+						printf("Info <expand_sig()>: Ignoring connection of signal directions (none->output).\n");
+						printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig), ivl_scope_basename(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig));
 					}
 				}
 				// aff_sig direction is INPUT; sig direction is OUTPUT
 				else if (ivl_signal_port(aff_sig) == IVL_SIP_INPUT && ivl_signal_port(sig) == IVL_SIP_OUTPUT){
-					// Only connect an output and input signal if they are
-					// contained in different modules
-					if (ivl_signal_scope(aff_sig) != ivl_signal_scope(sig)){
-						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);	
-					} else {
-						printf("Warning <expand_sig()>: Ignoring connection of signal directions (output->input).\n");
+					// Connect an output and input signal if they are
+					// contained in different modules, OR if they are 
+					// both an output and input to the same module. 
+					connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
+					
+					if (DEBUG_CONNECTION_DIRS_INFO && (ivl_signal_scope(aff_sig) == ivl_signal_scope(sig))){
+						printf("Info <expand_sig()>: Ignoring connection of signal directions (output->input).\n");
+						printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig), ivl_scope_basename(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig));
 					}
 				}
 				// aff_sig direction is INPUT; sig direction is INPUT
@@ -89,10 +94,11 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
 					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
 
-					if (ivl_scope_parent(aff_sig_scope) == sig_scope) {
+					if (is_child_of_parent_module(aff_sig_scope, sig_scope)) {
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
-					} else {
-						printf("Warning <expand_sig()>: Ignoring connection of signal directions (input->input).\n");
+					} else if (DEBUG_CONNECTION_DIRS_INFO){						
+						printf("Info <expand_sig()>: Ignoring connection of signal directions (input->input).\n");
+						printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(sig_scope), ivl_signal_basename(sig), ivl_scope_basename(aff_sig_scope), ivl_signal_basename(aff_sig));
 					}
 				}
 				// aff_sig direction is INPUT; sig direction is NONE
@@ -102,10 +108,11 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
 					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
 
-					if (ivl_scope_parent(aff_sig_scope) == sig_scope) {
+					if (is_child_of_parent_module(aff_sig_scope, sig_scope)) {
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
-					} else {
-						printf("Warning <expand_sig()>: Ignoring connection of signal directions (none->input).\n");
+					} else if (DEBUG_CONNECTION_DIRS_INFO){
+						printf("Info <expand_sig()>: Ignoring connection of signal directions (none->input).\n");
+						printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(sig_scope), ivl_signal_basename(sig), ivl_scope_basename(aff_sig_scope), ivl_signal_basename(aff_sig));
 					}
 				}
 				// aff_sig direction is NONE; sig direction is OUTPUT
@@ -115,10 +122,11 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					ivl_scope_t aff_sig_scope = ivl_signal_scope(aff_sig);
 					ivl_scope_t sig_scope     = ivl_signal_scope(sig);
 
-					if (ivl_scope_parent(sig_scope) == aff_sig_scope){
+					if (is_child_of_parent_module(sig_scope, aff_sig_scope)){
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);	
 					} else {
 						printf("Warning <expand_sig()>: Ignoring connection of signal directions (output->none).\n");
+						if (DEBUG_CONNECTION_DIRS_WARNING){ printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(sig_scope), ivl_signal_basename(sig), ivl_scope_basename(aff_sig_scope), ivl_signal_basename(aff_sig)); }
 					}
 				}
 				// aff_sig direction is NONE; sig direction is INPUT
@@ -128,8 +136,9 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 					// the same module.
 					if (ivl_signal_scope(aff_sig) == ivl_signal_scope(sig)){
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);	
-					} else {
-						printf("Warning <expand_sig()>: Ignoring connection of signal directions (input->none).\n");
+					} else if (DEBUG_CONNECTION_DIRS_INFO){
+						printf("Info <expand_sig()>: Ignoring connection of signal directions (input->none).\n");
+						printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig), ivl_scope_basename(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig));
 					}
 				}
 				// aff_sig direction is NONE; sig direction is NONE
@@ -140,6 +149,7 @@ void expand_sig(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_e
 						connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);	
 					} else {
 						printf("Warning <expand_sig()>: Ignoring connection of signal directions (none->none).\n");
+						if (DEBUG_CONNECTION_DIRS_WARNING){ printf("%s.%s --> %s.%s\n\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig), ivl_scope_basename(ivl_signal_scope(aff_sig)), ivl_signal_basename(aff_sig)); }
 					}
 				}
 				// Raise error if none of these conditions hold

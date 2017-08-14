@@ -15,10 +15,20 @@
 #include <ivl_target.h>
 #include "nemo_dot_file.h"
 
-#define DEBUG_PRINTS 			 false
+// Debugging Switches
+#define DEBUG_PRINTS 		          true
+#define DEBUG_CONNECTION_DIRS_INFO    false
+#define DEBUG_CONNECTION_DIRS_WARNING true
+#define DEBUG_LOGIC_ASSIGN_CONNECTION false
+
+// Circuit Analysis Options
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
-#define SEARCH_DEPTH 			 4
+#define IGNORE_CLK_SIGNALS		 true
+#define SEQUENTIAL_CLK_PIN_NAME  "CK"
+
+// Tool Options
+#define SEARCH_DEPTH 1
 // #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]|supv"
 #define CRITICAL_SIG_REGEX "supv"
 
@@ -31,6 +41,8 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vecto
 
 bool is_sig_expanded(set<ivl_signal_t>& explored_signals, ivl_signal_t sig);
 bool is_critical_sig(ivl_signal_t sig);
+bool is_clk_sig(ivl_signal_t sig);
+bool is_child_of_parent_module(ivl_scope_t child_scope, ivl_scope_t parent_scope);
 bool is_ivl_generated_signal(ivl_signal_t sig);
 ivl_net_const_t is_const_local_sig(ivl_signal_t sig);
 
