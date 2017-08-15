@@ -16,7 +16,7 @@
 #include "nemo_dot_file.h"
 
 // Debugging Switches
-#define DEBUG_PRINTS 		          true
+#define DEBUG_PRINTS 		          false
 #define DEBUG_CONNECTION_DIRS_INFO    false
 #define DEBUG_CONNECTION_DIRS_WARNING true
 #define DEBUG_LOGIC_ASSIGN_CONNECTION false
@@ -59,21 +59,21 @@ void connect_signals(
 	Dot_File&          df, 
 	bool               expand_search);
 
-void expand_std_cell_sigs(
+int expand_std_cell_sigs(
 	ivl_signal_t       aff_sig, 
 	Dot_File&          df, 
 	set<ivl_signal_t>& sigs_to_expand,
 	set<ivl_signal_t>& explored_sigs,
 	bool 			   expand_search);
 
-void expand_sig(
+int expand_sig(
 	ivl_signal_t 	   aff_sig, 
 	Dot_File& 		   df, 
 	set<ivl_signal_t>& sigs_to_expand,
 	set<ivl_signal_t>& explored_sigs,
 	bool 			   expand_search);
 
-void expand_log(
+int expand_log(
 	const ivl_net_logic_t logic, 
 	ivl_signal_t 	   aff_sig, 
 	Dot_File& 		   df, 
@@ -81,7 +81,7 @@ void expand_log(
 	set<ivl_signal_t>& explored_sigs,
 	bool 		       expand_search);
 
-void expand_lpm(
+int expand_lpm(
 	const ivl_lpm_t	   lpm, 
 	ivl_signal_t 	   aff_sig, 
 	Dot_File& 		   df, 

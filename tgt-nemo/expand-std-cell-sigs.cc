@@ -4,11 +4,14 @@
 
 #include "nemo.h"
 
-void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search){
+int expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search){
 	ivl_signal_t curr_input_sig  = NULL;
 	ivl_scope_t  curr_scope      = ivl_signal_scope(aff_sig);
 	unsigned     num_scope_sigs  = ivl_scope_sigs(ivl_signal_scope(aff_sig));
 	unsigned 	 num_scope_ports = ivl_scope_ports(ivl_signal_scope(aff_sig));
+
+	// Depth Explored
+	int depth_explored = 1;
 
 	pair<set<ivl_signal_t>::iterator, bool> insert_ret;
 
@@ -44,4 +47,6 @@ void expand_std_cell_sigs(ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>&
 			printf("Warning <expand_std_cell_sigs()>: ignoring none type signals (%s.%s).\n", ivl_scope_basename(ivl_signal_scope(curr_input_sig)), ivl_signal_basename(curr_input_sig));
 		}
 	}
+
+	return depth_explored;
 }

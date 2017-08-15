@@ -2,7 +2,7 @@
 
 #include "nemo.h"
 
-void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+int expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	unsigned num_input_pins = ivl_logic_pins(logic);
 	
 	// Device Pointers
@@ -13,6 +13,9 @@ void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df,
 	// Nexus Pointers
 	ivl_nexus_t     input_pin_nexus;
 	ivl_nexus_ptr_t nexus_ptr;
+
+	// Depth Explored
+	int depth_explored = 1;
 
 	if (DEBUG_PRINTS){ 
 		printf("		Logic (%s) is of type %d\n", ivl_logic_basename(logic), ivl_logic_type(logic));
@@ -38,6 +41,7 @@ void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df,
 					connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
 				} else if (ivl_signal_scope(sig) == ivl_signal_scope(aff_sig)) {
 					connect_signals(aff_sig, sig, sigs_to_expand, explored_sigs, df, expand_search);
+					depth_explored = 0;
 				} else if (DEBUG_LOGIC_ASSIGN_CONNECTION) {
 					printf("Info <expand_log()>: Ignoring connection of IVL_LO_BUFZ input %s.%s\n", ivl_scope_basename(ivl_signal_scope(sig)), ivl_signal_basename(sig));
 				}
@@ -49,4 +53,5 @@ void expand_log(const ivl_net_logic_t logic, ivl_signal_t aff_sig, Dot_File& df,
 			}	
 		}
 	}
+	return depth_explored;
 }

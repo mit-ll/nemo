@@ -2,7 +2,7 @@
 
 #include "nemo.h"
 
-void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search) {
+int expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl_signal_t>& sigs_to_expand, set<ivl_signal_t>& explored_sigs, bool expand_search) {
 	// LPM Type
 	const ivl_lpm_type_t lpm_type = ivl_lpm_type(lpm);
 	
@@ -12,6 +12,9 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 	// Nexus Pointers
 	ivl_nexus_t     input_pin_nexus;
 	ivl_nexus_ptr_t nexus_ptr;
+
+	// Depth Explored
+	int depth_explored = 1;
 
 	pair<set<ivl_signal_t>::iterator, bool> insert_ret;
 
@@ -23,6 +26,7 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 			if (ivl_lpm_data(lpm, 1)) {
 				fprintf(stderr, "ERROR: LPM_PART_VP/PV with non constant base not supported\n");
 				fprintf(stderr, "File: %s Line: %d\n", ivl_lpm_file(lpm), ivl_lpm_lineno(lpm));
+				depth_explored = 0;
 				break;
 			}
 			
@@ -51,7 +55,6 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 					}
 				}
 			}
-
 			break;
 		/* part select: part select to vector (part select in lval) */
 		case IVL_LPM_PART_PV:
@@ -59,6 +62,7 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 			if (ivl_lpm_data(lpm, 1)) {
 				fprintf(stderr, "ERROR: LPM_PART_VP/PV with non constant base not supported\n");
 				fprintf(stderr, "File: %s Line: %d\n", ivl_lpm_file(lpm), ivl_lpm_lineno(lpm));
+				depth_explored = 0;
 				break;
 			}
 			if (DEBUG_PRINTS){ printf("		LPM (%s) is of type (%d) IVL_LPM_PART_PV\n", ivl_lpm_basename(lpm), lpm_type); }
@@ -126,11 +130,11 @@ void expand_lpm(const ivl_lpm_t lpm, ivl_signal_t aff_sig, Dot_File& df, set<ivl
 			}
 			}
 			break;
-
 		default:
 			fprintf(stderr, "ERROR: Unsupported LPM type %d\n", lpm_type);
 			fprintf(stderr, "File: %s Line: %d\n", ivl_lpm_file(lpm), ivl_lpm_lineno(lpm));
-			return;
+			depth_explored = 0;
 			break;
 	}
+	return depth_explored;
 }

@@ -48,10 +48,10 @@ void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_s
 		
 		if (!ENUMERATE_ENTIRE_CIRCUIT && !is_sig_expanded(expanded_signals, aff_sig)){
 			// Do NOT enumerate the entire circuit
-			if (depth_counter-- > 0){
-				expand_sig(aff_sig, df, sigs_to_expand, expanded_signals, true);
+			if (depth_counter > 0){
+				depth_counter -= expand_sig(aff_sig, df, sigs_to_expand, expanded_signals, true);
 			} else {
-				expand_sig(aff_sig, df, sigs_to_expand, expanded_signals, false);
+				depth_counter -= expand_sig(aff_sig, df, sigs_to_expand, expanded_signals, false);
 			}
 		} else if (!is_sig_expanded(expanded_signals, aff_sig)) {
 			// Enumerate the entire circuit, i.e. every signal is critical
