@@ -1,0 +1,780 @@
+`celldefine
+module PBIDIR_18_PL_V ( 
+		PO,
+		Y,
+		PAD,
+		TRIGGER,
+		A,
+		DS0,
+		DS1,
+		IE,
+		IS,
+		OE,
+		PE,
+		POE,
+		PS,
+		RTO,
+		SNS,
+		SR
+ );
+
+   inout PAD;
+   output Y;
+   output PO;
+   input A;
+   input OE;
+   input DS0;
+   input DS1;
+   input SR;
+   input PS;
+   input PE;
+   input IE;
+   input IS;
+   input POE;
+   input RTO;
+   input SNS;
+   inout TRIGGER;
+   //primitive for output enable
+endmodule
+`endcelldefine
+
+`celldefine
+module PBIDIR_18_PL_H ( 
+		PO,
+		Y,
+		PAD,
+		TRIGGER,
+		A,
+		DS0,
+		DS1,
+		IE,
+		IS,
+		OE,
+		PE,
+		POE,
+		PS,
+		RTO,
+		SNS,
+		SR
+ );
+
+   inout PAD;
+   output Y;
+   output PO;
+   input A;
+   input OE;
+   input DS0;
+   input DS1;
+   input SR;
+   input PS;
+   input PE;
+   input IE;
+   input IS;
+   input POE;
+   input RTO;
+   input SNS;
+   inout TRIGGER;
+   //primitive for output enable
+endmodule
+`endcelldefine
+
+`celldefine
+module POSC1_18_PL_V (
+		CK,
+		PO,
+		PADI,
+		PADO,
+		TRIGGER,
+		E0,
+		E1,
+		POE,
+		RTO,
+		SNS,
+		SP
+ );
+
+   inout PADO;
+   inout PADI;
+   inout TRIGGER;
+   output CK;
+   output PO;
+   input E0;
+   input E1;
+   input SP;
+   input SNS;
+   input RTO;
+   input POE;
+endmodule
+`endcelldefine
+
+`celldefine
+module POSC1_18_PL_H (
+		CK,
+		PO,
+		PADI,
+		PADO,
+		TRIGGER,
+		E0,
+		E1,
+		POE,
+		RTO,
+		SNS,
+		SP
+ );
+
+   inout PADO;
+   inout PADI;
+   inout TRIGGER;
+   output CK;
+   output PO;
+   input E0;
+   input E1;
+   input SP;
+   input SNS;
+   input RTO;
+   input POE;
+endmodule
+`endcelldefine
+
+`celldefine
+module POSCP_18_PL_V (
+		CK,
+		PO,
+		PADI,
+		PADO,
+		TRIGGER,
+		E0,
+		E1,
+		POE,
+		RTO,
+		SF0,
+		SF1,
+		SNS,
+		SP
+ );
+
+   inout PADO;
+   inout PADI;
+   inout TRIGGER;
+   output CK;
+   output PO;
+   input E0;
+   input E1;
+   input SF0;
+   input SF1;
+   input SP;
+   input SNS;
+   input RTO;
+   input POE;
+endmodule
+`endcelldefine
+
+`celldefine
+module POSCP_18_PL_H (
+		CK,
+		PO,
+		PADI,
+		PADO,
+		TRIGGER,
+		E0,
+		E1,
+		POE,
+		RTO,
+		SF0,
+		SF1,
+		SNS,
+		SP
+ );
+
+   inout PADO;
+   inout PADI;
+   inout TRIGGER;
+   output CK;
+   output PO;
+   input E0;
+   input E1;
+   input SF0;
+   input SF1;
+   input SP;
+   input SNS;
+   input RTO;
+   input POE;
+endmodule
+`endcelldefine
+
+`celldefine
+module PANALOG_18_PL_V (
+		ATRIGGER,
+		PAD,
+		PADR1,
+		PADR2,
+		RTO,
+		SNS
+ );
+
+   inout PAD;
+   inout PADR1;
+   inout PADR2;
+   inout ATRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PANALOG_18_PL_H (
+		ATRIGGER,
+		PAD,
+		PADR1,
+		PADR2,
+		RTO,
+		SNS
+ );
+
+   inout PAD;
+   inout PADR1;
+   inout PADR2;
+   inout ATRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PAVDD_18_PL_V ( 
+		ATRIGGER,
+		RTO,
+		SNS
+ );
+
+   inout ATRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PAVDD_18_PL_H ( 
+		ATRIGGER,
+		RTO,
+		SNS
+ );
+
+   inout ATRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PAVSS_18_PL_V ( 
+		ATRIGGER,
+		RTO,
+		SNS
+ );
+
+   inout ATRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PAVSS_18_PL_H ( 
+		ATRIGGER,
+		RTO,
+		SNS
+ );
+
+   inout ATRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSENSE_18_PL_V (
+		RTO,
+		SNS,
+		TRIGGER,
+		RET_EXT
+ );
+
+    output RTO;
+    output SNS;
+    inout TRIGGER;
+    input RET_EXT;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSENSE_18_PL_H (
+		RTO,
+		SNS,
+		TRIGGER,
+		RET_EXT
+ );
+
+    output RTO;
+    output SNS;
+    inout TRIGGER;
+    input RET_EXT;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSENSELS_18_PL_V (
+		RET_OUT,
+		TRIGGER,
+		RETB_LC,
+		RET_LC,
+		RTO,
+		SNS
+ );
+
+    input RTO;
+    input SNS;
+    output RET_OUT;
+    input RET_LC;
+    inout TRIGGER;
+    input RETB_LC;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSENSELS_18_PL_H (
+		RET_OUT,
+		TRIGGER,
+		RETB_LC,
+		RET_LC,
+		RTO,
+		SNS
+ );
+
+    input RTO;
+    input SNS;
+    output RET_OUT;
+    inout TRIGGER;
+    input RET_LC;
+    input RETB_LC;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSENSETIE_18_PL_V (
+		RTO,
+		SNS,
+		TRIGGER
+ );
+
+    output RTO;
+    output SNS;
+    inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSENSETIE_18_PL_H (
+		RTO,
+		SNS,
+		TRIGGER
+ );
+
+    output RTO;
+    output SNS;
+    inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PCORNER_18_PL_V (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PCORNER_18_PL_H (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBRK_18_PL_V (
+		TRIGGER,
+		TRIGGERbrk,
+		RTO,
+		RTObrk,
+		SNS,
+		SNSbrk
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+   input SNSbrk;
+   input RTObrk;
+   inout TRIGGERbrk;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBRK_18_PL_H (
+		TRIGGER,
+		TRIGGERbrk,
+		RTO,
+		RTObrk,
+		SNS,
+		SNSbrk
+ );
+
+   input SNS;
+   input RTO;
+   input SNSbrk;
+   input RTObrk;
+   inout TRIGGERbrk;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBRKANALOG_18_PL_V (
+		TRIGGER,
+		TRIGGERbrk,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGERbrk;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBRKANALOG_18_PL_H (
+		TRIGGER,
+		TRIGGERbrk,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGERbrk;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBRKOSC_18_PL_V (
+		TRIGGER,
+		TRIGGERbrk,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGERbrk;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBRKOSC_18_PL_H (
+		TRIGGER,
+		TRIGGERbrk,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGERbrk;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVDD_18_PL_V ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVDD_18_PL_H ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVDDI_18_PL_V ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVDDI_18_PL_H ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSS_18_PL_V ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PVSS_18_PL_H ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PDVDD_18_PL_V ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PDVDD_18_PL_H ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PDVSS_18_PL_V ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PDVSS_18_PL_H ( 
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL10_18_PL_V (
+		TRIGGER,
+		RTO,
+		SNS
+);
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL10_18_PL_H (
+		TRIGGER,
+		RTO,
+		SNS
+);
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL5_18_PL_V (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL5_18_PL_H (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL2_18_PL_V (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL2_18_PL_H (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL1NC_18_PL_V (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PFILL1NC_18_PL_H (
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   input SNS;
+   input RTO;
+   inout TRIGGER;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBAREWIRE_18_PL_V (
+		PAD,
+		PADR1,
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   inout PAD;
+   inout PADR1;
+   inout TRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
+`celldefine
+module PBAREWIRE_18_PL_H (
+		PAD,
+		PADR1,
+		TRIGGER,
+		RTO,
+		SNS
+ );
+
+   inout PAD;
+   inout PADR1;
+   inout TRIGGER;
+   input SNS;
+   input RTO;
+endmodule
+`endcelldefine
+
