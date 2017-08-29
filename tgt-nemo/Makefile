@@ -18,6 +18,9 @@ TOP_MODULE=MAL_TOP
 
 # NETLIST=../netlists/test.v ../netlists/test_std_cell_defs.vm
 NETLIST=../netlists/MAL_TOP.nl.v ../netlists/std_cell_defs_45nm.vm ../netlists/io_cell_defs_45nm.vm
+# NETLIST=../netlists/MAL_TOP.par.nl.v ../netlists/std_cell_defs_45nm.vm ../netlists/io_cell_defs_45nm.vm
+# NETLIST=../netlists/MAL_TOP.par.physical.nl.v ../netlists/std_cell_defs_45nm.vm ../netlists/io_cell_defs_45nm.vm
+# NETLIST=../netlists/MAL_TOP.par.incPG.nl.v ../netlists/std_cell_defs_45nm.vm ../netlists/io_cell_defs_45nm.vm
 
 all: $(TGT) confs install
 
