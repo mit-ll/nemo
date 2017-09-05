@@ -79,6 +79,17 @@ following configurations are:
 											   dependencies for entire circuit 
 4. SEARCH_DEPTH             < unsigned int > - depth to search for signal 
 											   dependencies
+											   
+## Update 1.1
+Nemo has been updated to account for more complex port-to-port signal
+connections that occur when two modules are hooked up in a netlist.
+
+Nemo has also been updated to tolerate/ignore clock tree signals that
+can be identified with a user specified prefix that is to be declared
+defined in the "nemo.h" file (SEQUENTIAL_CLK_PIN_NAME). The option
+to analyze or ignore the clock tree signals is also defined in the
+"nemo.h" file (IGNORE_CLK_SIGNALS).
+
 ## License
 Copyright (c) 2017, Massachusetts Institute of Technology.
 
