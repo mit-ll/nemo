@@ -67,7 +67,7 @@ path of iverilog directory>"
 
 ## Nemo Configurations
 
-There are several parameters that can be configured withing Nemo to achieve
+There are several parameters that can be configured within Nemo to achieve
 various goals. All #define configurations are located in the "nemo.h" file. The
 following configurations are:
 
