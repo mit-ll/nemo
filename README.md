@@ -6,7 +6,7 @@ the open source frontend Verilog compiler tool Icarus Verilog
 dependency graphs for any signal(s) in the design after it has been synthesized
 and mapped.
 
-In order for Nemo to be usefull, it must be invoked by the Icarus Verilog (IVL) 
+In order for Nemo to be useful, it must be invoked by the Icarus Verilog (IVL) 
 frontend compiler and interacts with the data structures created by IVL via the
 IVL API defined by in the "ivl_target.h" header file. In order to use Nemo, one
 must first build/install IVL before building/installing Nemo.
