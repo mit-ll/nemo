@@ -64,7 +64,7 @@ void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_s
 }
 
 // Finds all security critical signals
-void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vector<ivl_signal_t>& critical_sigs){
+void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vector<ivl_signal_t>& critical_sigs, const char* regex_str){
 	unsigned          num_critical_signals_found = 0;
 
 	printf("\nNumber of root scopes: %d\n\n", num_root_scopes);
@@ -73,7 +73,7 @@ void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vect
 		if (!ENUMERATE_ENTIRE_CIRCUIT){
 			printf("Critical signals in root scope %s:\n", ivl_scope_basename(root_scopes[i]));
 		}
-		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, critical_sigs);
+		find_critical_scope_sigs(root_scopes[i], &num_critical_signals_found, critical_sigs, regex_str);
 	}
 
 	printf("\nNumber of critical signals found: %d\n\n", num_critical_signals_found);
@@ -81,7 +81,7 @@ void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vect
 
 // Recurse through IVL scope objects (in this case only modules)
 // to find all security critical signals
-void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vector<ivl_signal_t>& critical_sigs){
+void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vector<ivl_signal_t>& critical_sigs, const char* regex_str){
 	//@TODO: Look more into dealing with scopes that are not modules
 	if (ivl_scope_type(scope) != IVL_SCT_MODULE) {
 		fprintf(stderr, "ERROR: cannot parse scope type (%d)\n", ivl_scope_type(scope));
@@ -91,7 +91,7 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vecto
 
 	// Rescurse into any submodules
 	for (unsigned i = 0; i < ivl_scope_childs(scope); i++) {
-		find_critical_scope_sigs(ivl_scope_child(scope, i), num_sigs_found, critical_sigs);
+		find_critical_scope_sigs(ivl_scope_child(scope, i), num_sigs_found, critical_sigs, regex_str);
 	}
 
 	// Enumerate all signals in each scope
@@ -104,7 +104,7 @@ void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vecto
 		// Only deal with non IVL generated (local) signals
 		if (!is_ivl_generated_signal(current_ivl_signal)){
 			// Check if signal is critical
-			if (is_critical_sig(current_ivl_signal)){
+			if (is_critical_sig(current_ivl_signal, regex_str)){
 				// Check if signal is arrayed
 				if (ivl_signal_packed_dimensions(current_ivl_signal) > 1) {
 					print_full_signal_name(current_ivl_signal);
@@ -129,12 +129,12 @@ bool is_sig_expanded(set<ivl_signal_t>& explored_signals, ivl_signal_t sig){
 
 // Returns true if the signal name found in the netlist 
 // matches the regex for security critical signals
-bool is_critical_sig(ivl_signal_t sig){
+bool is_critical_sig(ivl_signal_t sig, const char* regex_str){
 	if (ENUMERATE_ENTIRE_CIRCUIT) {
 		return true;
 	}
 
-	regex  critical_regex(CRITICAL_SIG_REGEX, regex::grep);
+	regex  critical_regex(regex_str, regex::grep);
 	smatch matches;
 	string signal_base_name = string(ivl_signal_basename(sig));
 	
@@ -314,7 +314,7 @@ int target_design(ivl_design_t des) {
 	ivl_design_roots(des, &roots, &num_roots);
 	
 	// Find all critical signals and dependencies in the design
-	find_critical_sigs(roots, num_roots, critical_sigs);
+	find_critical_sigs(roots, num_roots, critical_sigs, CRITICAL_SIG_REGEX);
 
 	// Find signal dependencies of critical sigs
 	find_all_signal_dependencies(critical_sigs, df);
