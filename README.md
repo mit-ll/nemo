@@ -30,6 +30,22 @@ file and a PDF visual representation of the DOT file, are available in the
 1. Clone IVL  Repo --> git clone git://github.com/steveicarus/iverilog.git 
 2. Clone Nemo Repo --> git clone <LL Github Nemo Repo>
 
+## Disabling optimization functions of IVL
+
+Disabling the optimization functions of IVL is important for preserving the
+input netlists structure as-is for analysis by Nemo. To do so, you must simply
+comment out two blocks of code in the "main.cc" file in the top-level IVL
+source code repo as follows:
+
+1.	cout << "RUNNING FUNCTORS" << endl;
+2.	while (!net_func_queue.empty()) {
+		net_func func = net_func_queue.front();
+		net_func_queue.pop();
+		if (verbose_flag)
+			cerr<<" -F "<<net_func_to_name(func)<< " ..." <<endl;
+		func(des);
+	}
+
 ## Building/Installing IVL
 
 Detailed instructions on this process can be found here:
@@ -80,7 +96,7 @@ following configurations are:
 4. SEARCH_DEPTH             < unsigned int > - depth to search for signal 
 											   dependencies
 											   
-## Update 1.1
+## Update 1.1 - 9/14/17
 Nemo has been updated to account for more complex port-to-port signal
 connections that occur when two modules are hooked up in a netlist.
 
