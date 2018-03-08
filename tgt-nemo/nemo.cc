@@ -4,7 +4,7 @@
 #include <cstring>
 #include <ctime>
 #include <string>
-#include <regex>
+// #include <regex>
 
 #include "nemo.h"
 
@@ -134,15 +134,19 @@ bool is_critical_sig(ivl_signal_t sig, const char* regex_str){
 		return true;
 	}
 
-	regex  critical_regex(regex_str, regex::grep);
-	smatch matches;
-	string signal_base_name = string(ivl_signal_basename(sig));
-	
-	regex_search(signal_base_name, matches, critical_regex);
-	if (matches.size() > 0){
+	if (strstr(ivl_signal_basename(sig), regex_str)){
 		return true;
 	}
-	return false;
+	return false;	
+	// regex  critical_regex(regex_str, regex::grep);
+	// smatch matches;
+	// string signal_base_name = string(ivl_signal_basename(sig));
+	
+	// regex_search(signal_base_name, matches, critical_regex);
+	// if (matches.size() > 0){
+	// 	return true;
+	// }
+	// return false;
 }
 
 // Returns true if the signal is a CLK signal.
