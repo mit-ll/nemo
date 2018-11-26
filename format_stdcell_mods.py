@@ -1,7 +1,7 @@
 import copy
 
-ifile = open("/Volumes/ttrippel/A2/io_gppr_soi12s0_t18_mv10_mv18_avt_pl.v", "rb")
-ofile = open("io_cell_defs_45nm.vm", "wb")
+ifile = open("/home/g89_designs/libraries/MITLL90_STDLIB_8T/2018.5/MITLL90_STDLIB_8T.v", "rb")
+ofile = open("MITLL90_STDLIB_8T.vm", "wb")
 
 started   = False
 mod_paren = False
@@ -13,7 +13,8 @@ for line in ifile:
 			ofile.write("\n")
 			mod_paren = False
 	else:
-		if "module" in line and "endmodule" not in line and "`else" in prev_line and not started:
+		# if "module" in line and "endmodule" not in line and "`else" in prev_line and not started:
+		if "module" in line and "endmodule" not in line and not started:
 			ofile.write("`celldefine\n")
 			ofile.write(line)
 			started = True

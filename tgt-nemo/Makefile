@@ -1,5 +1,5 @@
-BASE_IVERILOG_DIR=/Users/ti27457/Repos/iverilog
-EXEC_DIR=/Users/ti27457/Repos/iverilog/lib/ivl
+BASE_IVERILOG_DIR=/home/ttrippel/iverilog
+EXEC_DIR=/home/ttrippel/iverilog/lib/ivl
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -7,7 +7,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 
 IDIR=../../iverilog
 CC=g++
-CFLAGS=-I$(IDIR) -fpic -std=gnu++0x -Wall -Wextra -Wshadow -g -O2
+CFLAGS=-I$(IDIR) -fpic -shared -std=gnu++0x -Wall -Wextra -Wshadow -g -O2
 
 TGT=nemo
 SRCS=$(wildcard *.cc)
@@ -25,7 +25,7 @@ NETLIST=../netlists/MAL_TOP.nl.v ../netlists/std_cell_defs_45nm.vm ../netlists/i
 all: $(TGT) confs install
 
 $(TGT): $(OBJS)
-	$(CC) -undefined suppress -flat_namespace $(CFLAGS) -o $@.tgt $^ 
+	$(CC) -flat_namespace $(CFLAGS) -o $@.tgt $^ 
  
 %.o: %.cc
 	$(CC) $(CFLAGS) -c -o $@ $<

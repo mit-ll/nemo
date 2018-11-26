@@ -25,13 +25,14 @@
 #define INCLUDE_LOCAL_SIGNALS 	 false
 #define ENUMERATE_ENTIRE_CIRCUIT false
 #define IGNORE_CLK_SIGNALS		 true
-#define SEQUENTIAL_CLK_PIN_NAME  "CK"
+#define SEQUENTIAL_CLK_PIN_NAME  "CLK"
 
 // Tool Options
-#define SEARCH_DEPTH 2
- // #define SEARCH_DEPTH 1
+// #define SEARCH_DEPTH 2
+#define SEARCH_DEPTH 1
+#define CRITICAL_SIG_REGEX "critical"
 // #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]|supv"
-#define CRITICAL_SIG_REGEX "supv" // OR1200
+// #define CRITICAL_SIG_REGEX "supv" // OR1200
 // #define CRITICAL_SIG_REGEX "round_key" // AES block
 // #define CRITICAL_SIG_REGEX "next_out" // DSP block
 

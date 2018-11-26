@@ -318,6 +318,7 @@ int target_design(ivl_design_t des) {
 	ivl_design_roots(des, &roots, &num_roots);
 	
 	// Find all critical signals and dependencies in the design
+	puts(CRITICAL_SIG_REGEX);
 	find_critical_sigs(roots, num_roots, critical_sigs, CRITICAL_SIG_REGEX);
 
 	// Find signal dependencies of critical sigs
