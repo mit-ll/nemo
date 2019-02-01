@@ -18,19 +18,17 @@
 #define IGNORE_CLK_SIGNALS		 true
 #define SEQUENTIAL_CLK_PIN_NAME  "CLK"
 
-// Tool Options
-// #define SEARCH_DEPTH 2
-#define SEARCH_DEPTH 1
-#define CRITICAL_SIG_REGEX "critical"
-// #define CRITICAL_SIG_REGEX "[\\(\\ (to_)]sr\\[0\\]|supv"
-// #define CRITICAL_SIG_REGEX "supv" // OR1200
+// Tool Defaults
+#define DEFAULT_SEARCH_DEPTH       1
+#define DEFAULT_CRITICAL_SIG_REGEX "critical"
+// #define CRITICAL_SIG_REGEX "supv"      // OR1200
 // #define CRITICAL_SIG_REGEX "round_key" // AES block
-// #define CRITICAL_SIG_REGEX "next_out" // DSP block
+// #define CRITICAL_SIG_REGEX "next_out"  // DSP block
 
 using namespace std;
 
-void find_all_signal_dependencies(vector<ivl_signal_t>& critical_sigs, Dot_File& df);
-void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals);
+void find_all_signal_dependencies(vector<ivl_signal_t>& critical_sigs, Dot_File& df, unsigned search_depth);
+void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals, unsigned search_depth);
 void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vector<ivl_signal_t>& critical_sigs, const char* regex_str);
 void find_critical_scope_sigs(ivl_scope_t scope, unsigned* num_sigs_found, vector<ivl_signal_t>& critical_sigs, const char* regex_str);
 

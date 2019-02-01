@@ -8,19 +8,19 @@
 
 #include "nemo.h"
 
-void find_all_signal_dependencies(vector<ivl_signal_t>& critical_sigs, Dot_File& df){
+void find_all_signal_dependencies(vector<ivl_signal_t>& critical_sigs, Dot_File& df, unsigned search_depth){
 	set<ivl_signal_t> expanded_signals;
 
 	for (unsigned i = 0; i < critical_sigs.size(); i++) {
-		find_signal_dependencies(critical_sigs[i], df, expanded_signals);
+		find_signal_dependencies(critical_sigs[i], df, expanded_signals, search_depth);
 	}
 }
 
-void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals){
+void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_signal_t>& expanded_signals, unsigned search_depth){
 	ivl_net_const_t   con;            // temp IVL constant object
 	ivl_signal_t      aff_sig;		  // temp IVL signal object
 	set<ivl_signal_t> sigs_to_expand; // set of signals to be expanded
-	int               depth_counter = SEARCH_DEPTH; // graph depth searched for dependencies
+	int               depth_counter = search_depth; // graph depth searched for dependencies
 
 	// Add base signal to signal-to-be-expanded set
 	if (!is_sig_expanded(expanded_signals, critical_sig)){
@@ -65,9 +65,7 @@ void find_signal_dependencies(ivl_signal_t critical_sig, Dot_File& df, set<ivl_s
 
 // Finds all security critical signals
 void find_critical_sigs(ivl_scope_t* root_scopes, unsigned num_root_scopes, vector<ivl_signal_t>& critical_sigs, const char* regex_str){
-	unsigned          num_critical_signals_found = 0;
-
-	printf("\nNumber of root scopes: %d\n\n", num_root_scopes);
+	unsigned num_critical_signals_found = 0;
 
 	for (unsigned i = 0; i < num_root_scopes; i++) {
 		if (!ENUMERATE_ENTIRE_CIRCUIT){
@@ -301,14 +299,32 @@ void print_signal_info(ivl_signal_t sig){
 
 // *** "Main"/Entry Point *** of iverilog target
 int target_design(ivl_design_t des) {
-	ivl_scope_t* 	     roots = 0;     // root scopes of the design
-	unsigned 		     num_roots;     // number of root scopes of the design
+	// Nemo Configurations
+	const char* critical_sig_regex = DEFAULT_CRITICAL_SIG_REGEX; // critical-signal prefix
+	unsigned    search_depth       = DEFAULT_SEARCH_DEPTH;       // critical-signal search depth
+	
+	// Verilog Structural Info
+	ivl_scope_t* roots     = 0; // root scopes of the design
+	unsigned     num_roots = 0; // number of root scopes of the design
+	
+	// Data Structures
 	Dot_File 		     df;  		    // output graph dot file
 	vector<ivl_signal_t> critical_sigs; // critical signals found in a design
 
 	// Variables to calculate runtime of this target module
-	double  duration;	
+	double  duration;
 	clock_t start = clock(); // Start timer
+
+	// Get critical signal prefix input
+	critical_sig_regex = ivl_design_flag(des, "nemo_sig_prefix");
+	if (strstr("", critical_sig_regex)) {
+		critical_sig_regex = DEFAULT_CRITICAL_SIG_REGEX;
+	}
+	printf("\nCritical Signal Prefix: %s\n", critical_sig_regex);
+
+	// Get critical signal search depth input
+	sscanf(ivl_design_flag(des, "nemo_search_depth"), "%u", &search_depth);
+	printf("Signal Search Depth:    %u\n", search_depth);
 
 	// Initialize graphviz dot file
 	df = Dot_File(ivl_design_flag(des, "-o"));
@@ -316,13 +332,13 @@ int target_design(ivl_design_t des) {
 
 	// Get root scopes of design
 	ivl_design_roots(des, &roots, &num_roots);
-	
+	printf("Number of root scopes:  %d\n\n", num_roots);
+
 	// Find all critical signals and dependencies in the design
-	puts(CRITICAL_SIG_REGEX);
-	find_critical_sigs(roots, num_roots, critical_sigs, CRITICAL_SIG_REGEX);
+	find_critical_sigs(roots, num_roots, critical_sigs, critical_sig_regex);
 
 	// Find signal dependencies of critical sigs
-	find_all_signal_dependencies(critical_sigs, df);
+	find_all_signal_dependencies(critical_sigs, df, search_depth);
 
 	// Close graphviz dot file
 	df.save_graph();
