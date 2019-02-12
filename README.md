@@ -2,7 +2,6 @@
 
 **Author:**			Timothy Trippel <br>
 **Email:**			timothy.trippel@ll.mit.edu <br>
-**Affiliation:** 	MIT Lincoln Laboratory <br>
 **Last Updated:**	02/12/2019 <br>
 
 ## About
