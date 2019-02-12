@@ -1,5 +1,5 @@
 //-----------------------------------------------------
-// Design Name : tes
+// Design Name : test
 // File Name   : test.v
 // Function    : Exercise Nemo Capabilities
 // Coder       : Timothy Trippel
