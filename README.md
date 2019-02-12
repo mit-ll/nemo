@@ -1,8 +1,8 @@
 # Nemo
 
-Author:       Timothy Trippel
-Affiliation:  MIT Lincoln Laboratory
-Last Updated: 02/12/2019
+Author:       Timothy Trippel 
+Affiliation:  MIT Lincoln Laboratory 
+Last Updated: 02/12/2019 
 
 ## About
 
