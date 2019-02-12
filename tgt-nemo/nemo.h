@@ -21,9 +21,6 @@
 // Tool Defaults
 #define DEFAULT_SEARCH_DEPTH       1
 #define DEFAULT_CRITICAL_SIG_REGEX "critical"
-// #define CRITICAL_SIG_REGEX "supv"      // OR1200
-// #define CRITICAL_SIG_REGEX "round_key" // AES block
-// #define CRITICAL_SIG_REGEX "next_out"  // DSP block
 
 using namespace std;
 
