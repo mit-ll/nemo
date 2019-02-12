@@ -34,6 +34,7 @@ from a Verilog synthesis tool) based on a signal prefix match (defined in input)
 Example Nemo input files, a Verilog netlist and a standard cell Verilog netlist, are available in the "netlists/" directory. Example Nemo output files, a DOT file and a PDF visual representation of the DOT file, are available in the "graphs/" directory.
 
 Author:      Timothy Trippel
+
 Affiliation: MIT Lincoln Laboratory
 
 ## Configurations
