@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// File:        expand-lpm.cc
+// Author:      Timothy Trippel
+// Affiliation: MIT Lincoln Laboratory
+// -----------------------------------------------------------------------------
+
 #include <cassert>
 
 #include "nemo.h"

@@ -2,7 +2,8 @@
 // Design Name : test
 // File Name   : test.v
 // Function    : Exercise Nemo Capabilities
-// Coder       : Timothy Trippel
+// Author      : Timothy Trippel
+// Affiliation : MIT Lincoln Laboratory
 //-----------------------------------------------------
 module test(
 	o1,

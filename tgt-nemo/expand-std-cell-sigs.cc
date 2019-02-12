@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// File:        expand-std-cell-sigs.cc
+// Author:      Timothy Trippel
+// Affiliation: MIT Lincoln Laboratory
+// -----------------------------------------------------------------------------
+
 #include <cassert>
 #include <cstdlib>
 #include <cstdio>

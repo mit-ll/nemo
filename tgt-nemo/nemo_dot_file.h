@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// File:        nemo_dot_file.h
+// Author:      Timothy Trippel
+// Affiliation: MIT Lincoln Laboratory
+// -----------------------------------------------------------------------------
+
 #ifndef __NEMO_DOT_FILE__
 #define __NEMO_DOT_FILE__
 

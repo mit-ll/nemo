@@ -1,3 +1,13 @@
+# -----------------------------------------------------------------------------
+# File:        Makefile
+# Author:      Timothy Trippel
+# Affiliation: MIT Lincoln Laboratory
+# Description:
+
+# This is Makefile to build a custom backend target module for the Icarus 
+# Verilog compiler frontend.
+# -----------------------------------------------------------------------------
+
 BASE_IVERILOG_DIR=/home/ttrippel/iverilog
 EXEC_DIR=/home/ttrippel/iverilog/lib/ivl
 

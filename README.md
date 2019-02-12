@@ -21,7 +21,7 @@ Nemo takes as input the following:
 <!-- |  4  | CLK Signal Name        | string        | "CLK"      |
 |  5  | Ignore Clock Signal    | boolean       | 1          | -->
 *Verilog netlist describing the standard cell modules used for synthesis must
-be included in Verilog files. A script to 
+be included in Verilog files. A script to generate this from a Verilog description of a STD cell library is included in the "scripts/" directory.*
 
 Nemo identifies critical signals in the input Verilog netlist (e.g., the output
 from a Verilog synthesis tool) based on a signal prefix match (defined in input)

@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// File:        nemo.cc
+// Author:      Timothy Trippel
+// Affiliation: MIT Lincoln Laboratory
+// -----------------------------------------------------------------------------
+
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>

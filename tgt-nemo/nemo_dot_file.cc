@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// File:        nemo_dot_file.cc
+// Author:      Timothy Trippel
+// Affiliation: MIT Lincoln Laboratory
+// -----------------------------------------------------------------------------
+
 #include <cassert>
 #include <string>
 #include <algorithm>

@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// File:        nemo.h
+// Author:      Timothy Trippel
+// Affiliation: MIT Lincoln Laboratory
+// -----------------------------------------------------------------------------
+
 #ifndef __NEMO_HEADER__
 #define __NEMO_HEADER__
 

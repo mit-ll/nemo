@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# File:        generate_tgt_confs
+# Author:      Timothy Trippel
+# Affiliation: MIT Lincoln Laboratory
+# -----------------------------------------------------------------------------
+
 # remove existing configuration files if reinstalling
 if [ -e iverilog/lib/ivl/$1.conf ]; then
 	rm iverilog/lib/ivl/$1.conf
