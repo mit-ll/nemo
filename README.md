@@ -1,5 +1,7 @@
 # Nemo
 
+## About
+
 Nemo is a custom Verilog compiler backend target module to be used along side
 the open source frontend Verilog compiler tool Icarus Verilog
 (http://iverilog.icarus.com/). Nemo allows an IC designer to create signal
@@ -38,63 +40,7 @@ are available in the "netlists/" directory. Example Nemo output files, a DOT
 file and a PDF visual representation of the DOT file, are available in the
 "graphs/" directory.
 
-## Cloning Git Repositories
-
-1. Clone IVL  Repo --> git clone git://github.com/steveicarus/iverilog.git 
-2. Clone Nemo Repo --> git clone <LL Github Nemo Repo>
-
-## Disabling optimization functions of IVL
-
-Disabling the optimization functions of IVL is important for preserving the
-input netlists structure as-is for analysis by Nemo. To do so, you must simply
-comment out two blocks of code in the "main.cc" file in the top-level IVL
-source code repo as follows:
-
-1.	cout << "RUNNING FUNCTORS" << endl;
-2.	while (!net_func_queue.empty()) {
-		net_func func = net_func_queue.front();
-		net_func_queue.pop();
-		if (verbose_flag)
-			cerr<<" -F "<<net_func_to_name(func)<< " ..." <<endl;
-		func(des);
-	}
-
-## Building/Installing IVL
-
-Detailed instructions on this process can be found here:
-http://iverilog.wikia.com/wiki/Installation_Guide, but a summary is provided
-below.
-
-1. cd iverilog
-2. comment out lines 1179, and 1182-1188 of IVL main.cc file to remove
-   frontend circuit optimzations
-3. sh autoconf.sh 
-4. ./configure --prefix=<full path of iverilog directory> 
-5. make install 
-6. cd ..
-
-## Building/Installing Nemo
-
-1. cd nemo
-2. cd tgt-nemo
-3. edit Makefile variable "BASE_IVERILOG_DIR" (line 1) to be "<full
-path of iverilog directory>" 
-4. edit Makefile variable "EXEC_DIR" (line 1) to be
-"<full path of iverilog directory>/lib/ivl" 
-5. add "#include <ivl_target.h>" between lines 14 and 15 of the nemo.h file 
-5. make all
-
-
-## Running Nemo on Sample Netlist
-
--run "make run" inside tgtnemo directory
-
---or--
-
--run "<path to IVL>/iverilog v t nemo s <top module name> o <output DOT file
--name> <netlist> <std cell netlist>"
-
-## Nemo Configurations
+## Configurations
 
 There are several parameters that can be configured within Nemo to achieve
 various goals. All #define configurations are located in the "nemo.h" file. The
@@ -110,6 +56,76 @@ following configurations are:
                                                dependencies for entire circuit
 5. SEQUENTIAL_CLK_PIN_NAME  < string >       - CLK signal name that is ignored 
                                                by nemo in graph propogation
+
+# Installation
+
+## 1. Cloning Nemo Git Repository
+
+The Nemo Git repository contains IVL as a Git submodule. Thus there are two ways to initialize the Nemo git repository as follows:
+
+`git clone --recurse-submodules https://llcad-github.llan.ll.mit.edu/HSS/nemo`
+
+-OR-
+
+`git clone https://llcad-github.llan.ll.mit.edu/HSS/nemo`
+`git submodule init`
+`git submodule update`
+
+## 2. Disabling optimization functions of IVL
+
+Disabling the optimization functions of IVL is important for preserving the
+input netlists structure as-is for analysis by Nemo. To do so, you must simply
+comment out two blocks of code in the "main.cc" file in the top-level IVL
+source code (lines 1179, and 1182-1188) submodule directory as follows:
+
+Line 1179:
+```cout << "RUNNING FUNCTORS" << endl;```
+
+Line 1182-1188:
+```
+while (!net_func_queue.empty()) {
+	net_func func = net_func_queue.front();
+	net_func_queue.pop();
+	if (verbose_flag)
+		cerr<<" -F "<<net_func_to_name(func)<< " ..." <<endl;
+	func(des);
+}
+```
+
+## 3. Building Nemo/IVL
+
+The Makefile provided with the Nemo repository (nemo/tgt-nemo/Makefile) contains targets for automatically building the IVL submodule and Nemo IVL target module all in one swoop.
+
+Automatic IVL/Nemo Installation:
+1. `cd <nemo repository>`
+2. `cd tgt-nemo`
+3. `make all`
+
+Alternatively, one can choose to manually build IVL first, then manually build/install Nemo. Building IVL and Nemo manually can be accomplished using the following installation instructions:
+
+1. IVL Manual Installation:
+	1. `cd <nemo repository>`
+	2. `cd iverilog`
+	3. comment out IVL optimization functions (see above)
+	4. `sh autoconf.sh`
+	5. `./configure --prefix=$(pwd)` 
+	6. `make install` 
+	7. `cd ..`
+
+2. Nemo Manual Installation:
+	1. `cd tgt-nemo`
+	2. `make all`
+
+# Nemo User Guide
+
+# Run Nemo Test
+
+-run "make run" inside tgtnemo directory
+
+--or--
+
+-run "<path to IVL>/iverilog v t nemo s <top module name> o <output DOT file
+-name> <netlist> <std cell netlist>"
 											   
 ## Update 1.1 - 9/14/17
 Nemo has been updated to account for more complex port-to-port signal
