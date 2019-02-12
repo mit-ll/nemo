@@ -1,5 +1,9 @@
 # Nemo
 
+Author:       Timothy Trippel
+Affiliation:  MIT Lincoln Laboratory
+Last Updated: 02/12/2019
+
 ## About
 
 Nemo is a custom Verilog compiler backend target module to be used along side
@@ -32,10 +36,6 @@ Nemo identifies critical signals in the input Verilog netlist (e.g., the output
 from a Verilog synthesis tool) based on a signal prefix match (defined in input) and generates a signal ependency graph (to a graph depth also defined in input) to identify which signals in a design have the potential to influence a critical signal. Nemo outputs the critical signal dependency graph in the Graphviz .dot format.
 
 Example Nemo input files, a Verilog netlist and a standard cell Verilog netlist, are available in the "netlists/" directory. Example Nemo output files, a DOT file and a PDF visual representation of the DOT file, are available in the "graphs/" directory.
-
-Author:      Timothy Trippel
-
-Affiliation: MIT Lincoln Laboratory
 
 ## Configurations
 
