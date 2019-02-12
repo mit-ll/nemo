@@ -15,13 +15,13 @@ must first build/install IVL before building/installing Nemo.
 
 Nemo takes as input the following:
 
-|     | Input                  | Type          | Default    |
-| --- | ---------------------- | ------------- | ---------- |
-|  1  | Verilog Netlist        | file name(s)* | n/a        |
-|  2  | Critical Signal Prefix | string        | "critical" |
-|  3  | Search Depth           | unsigned int  | 1          |
-<!-- |  4  | CLK Signal Name        | string        | "CLK"      |
-|  5  | Ignore Clock Signal    | boolean       | 1          | -->
+|     | Input                  | Type             | Default    |
+| --- | ---------------------- | ---------------- | ---------- |
+|  1  | Verilog Netlist        | file name(s)*    | n/a        |
+|  2  | Verilog Top Module     | top module name* | n/a        |
+|  3  | Critical Signal Prefix | string           | "critical" |
+|  4  | Search Depth           | unsigned int     | 1          |
+|  5  | Dot Output File Name   | unsigned int     | 1          |
 
 \**Verilog netlists should include a netlist file describing the standard cell
 modules used for synthesis must be included in Verilog files. A script to
@@ -29,16 +29,12 @@ generate this from a Verilog description of a STD cell library is included in
 the "scripts/" directory.*
 
 Nemo identifies critical signals in the input Verilog netlist (e.g., the output
-from a Verilog synthesis tool) based on a signal prefix match (defined in input)
-and generates a signal ependency graph (to a graph depth also defined in input)
-to identify which signals in a design have the potential to influence a critical
-signal. Nemo outputs the critical signal dependency graph in the Graphviz .dot
-format.
+from a Verilog synthesis tool) based on a signal prefix match (defined in input) and generates a signal ependency graph (to a graph depth also defined in input) to identify which signals in a design have the potential to influence a critical signal. Nemo outputs the critical signal dependency graph in the Graphviz .dot format.
 
-Example Nemo input files, a Verilog netlist and a standard cell Verilog netlist,
-are available in the "netlists/" directory. Example Nemo output files, a DOT
-file and a PDF visual representation of the DOT file, are available in the
-"graphs/" directory.
+Example Nemo input files, a Verilog netlist and a standard cell Verilog netlist, are available in the "netlists/" directory. Example Nemo output files, a DOT file and a PDF visual representation of the DOT file, are available in the "graphs/" directory.
+
+Author:      Timothy Trippel
+Affiliation: MIT Lincoln Laboratory
 
 ## Configurations
 
@@ -94,12 +90,15 @@ while (!net_func_queue.empty()) {
 
 ## 3. Building Nemo/IVL
 
+### A. Automatic IVL/Nemo Installation:
+
 The Makefile provided with the Nemo repository (nemo/tgt-nemo/Makefile) contains targets for automatically building the IVL submodule and Nemo IVL target module all in one swoop.
 
-Automatic IVL/Nemo Installation:
 1. `cd <nemo repository>`
 2. `cd tgt-nemo`
 3. `make all`
+
+### B. Manual IVL/Nemo Installation:
 
 Alternatively, one can choose to manually build IVL first, then manually build/install Nemo. Building IVL and Nemo manually can be accomplished using the following installation instructions:
 
@@ -116,17 +115,35 @@ Alternatively, one can choose to manually build IVL first, then manually build/i
 	1. `cd tgt-nemo`
 	2. `make all`
 
+### C. Export IVL to Path Enviroment Variable:
+
+Add the following to your .bash_profile or .bashrc:
+
+`PATH=$PATH:<nemo dir>/iverilog/bin`
+
 # Nemo User Guide
 
-# Run Nemo Test
+## Run Nemo Test
 
--run "make run" inside tgtnemo directory
+1. `cd <nemo repository>`
+2. `cd tgt-nemo`
+3. `make test`
 
---or--
+## Run Nemo from Command Line
 
--run "<path to IVL>/iverilog v t nemo s <top module name> o <output DOT file
--name> <netlist> <std cell netlist>"
-											   
+```
+iverilog -v \
+	-pnemo_sig_prefix=<critical signal prefix> \
+	-pnemo_search_depth=<search depth> \
+	-t nemo \
+	-s <top module name> \
+	-o <output file name>.dot \
+	<Verilog Netlist(s)> \
+	<Verilog STD Cell Netlist>
+```
+
+# Development History
+
 ## Update 1.1 - 9/14/17
 Nemo has been updated to account for more complex port-to-port signal
 connections that occur when two modules are hooked up in a netlist.
@@ -144,16 +161,12 @@ The following additional configuration inputs have been enabled:
 
 1. Critical signal prefix string (string)
 2. Search depth (unsigned integer)
-<!-- 3. CLK signal name (string)
-4. Ignore clock signal (boolean) -->
 
 Each configuration input is passed on the command line by prefixing a
 "-p" to each parameter name as follows:
 
 1. -pnemo_sig_prefix=<critical signal prefix>
 2. -pnemo_search_depth=<search depth>
-<!-- 3. -pnemo_sequential_clk_pin_name=<CLK signal name>
-4. -pnemo_ignore_clk_signals=<ignore clk signals (0/1)> -->
 
 Nemo has also been updated to include IVL as a git submodule for easier
 deployment and installation.
